@@ -46,91 +46,102 @@ def calculate_orientation_order_parameter(
 
     Returns
     -------
-    FLOAT
-        Average value of the local ordering parameter.
+    LIST
+        List of the values of local ordering parameter (mode='average'),
+        or a list of NumPy histograms with the distributions (mode='histogram')
 
     """
-    if mode == "average":
-        cos_sq_sum = 0.
-        i_s = 0
-    elif mode == "histogram":
-        cos_sq_raw_hist = np.zeros(n_bins)
-        _, bin_edges = np.histogram(cos_sq_raw_hist, bins = n_bins,
-                                           range = (0.,1.))
-        
-    if r_max == 0.:
-        r_max = min(u.dimensions) / 2.
     # Unwrap all the coordinates, so that all the bond lengths are
     # real. The closest images of the bonds will be found in the nested
     # function.
     unwrap = transformations.unwrap(u.atoms)
     u.trajectory.add_transformations(unwrap)
     
-    # Calculate bond components
-    # 1D arrays, one for each of the coordinates, provide more efficient
-    # numpy calculations. Converting the data here, outside of the main loop
-    # provided additional 15% speedup in the test runs.
-    bx = (u.bonds.atom2.positions[:, 0] - u.bonds.atom1.positions[:, 0])
-    by = (u.bonds.atom2.positions[:, 1] - u.bonds.atom1.positions[:, 1])
-    bz = (u.bonds.atom2.positions[:, 2] - u.bonds.atom1.positions[:, 2])
+    result = []
     
-    bond_components = [bx, by, bz]
-    
-    # Creating 1D arrays with bond midpoints
-    rx = (u.bonds.atom1.positions[:, 0] + u.bonds.atom2.positions[:, 0]) / 2.
-    ry = (u.bonds.atom1.positions[:, 1] + u.bonds.atom2.positions[:, 1]) / 2.
-    rz = (u.bonds.atom1.positions[:, 2] + u.bonds.atom2.positions[:, 2]) / 2.
-    
-    bond_midpoints = [rx, ry, rz]
-    
-    if not same_molecule:
-        bond_resids = u.bonds.atom1.resids
-    else:
-        bond_resids = None
-    
-    for bond in u.bonds:
-        # Determine the reference vector components and midpoint
-        # from the bond coordinates
-        ref_components = bond.atoms[1].position - bond.atoms[0].position
-        ref_midpoint = (bond.atoms[0].position + bond.atoms[1].position) / 2.
-        # If needed, exclude bonds from the same molecule
-        if not same_molecule:
-            excluded_resids = bond.atoms[0].resid
-        else:
-            excluded_resids = None
-        # Calculate ordering parameter value for the reference bond
-        cos_sq_masked = calculate_cos_sq_for_reference(
-            bond_components, bond_midpoints, ref_components, ref_midpoint,
-            u.dimensions, r_min = r_min, r_max = r_max,
-            vector_attributes = bond_resids,
-            excluded_attributes = excluded_resids)
-            
+    for ts in u.trajectory:
         if mode == "average":
-            if np.ma.count(cos_sq_masked) > 0:
-                cos_sq_sum += np.ma.average(cos_sq_masked)
-                i_s += 1
-            else:
-                pass
-                
+            cos_sq_sum = 0.
+            i_s = 0
         elif mode == "histogram":
-            cos_sq_hist_increment, _ = np.histogram(
-                np.ma.compressed(cos_sq_masked),
-                bins = n_bins, range = (0.,1.))
-            cos_sq_raw_hist += cos_sq_hist_increment
-
-    if mode == "average":
-        if i_s > 0:
-            # Normalize the values. Normalization procedure ensures that double
-            # consideration of each of the bonds doesn't affect the result
-            s = 1.5 * cos_sq_sum / i_s - 0.5
-            return s
+            cos_sq_raw_hist = np.zeros(n_bins)
+            _, bin_edges = np.histogram(cos_sq_raw_hist, bins = n_bins,
+                                                       range = (0.,1.))
+        
+        if r_max == 0.:
+            r_max = min(u.dimensions) / 2.
+    
+        # Calculate bond components
+        # 1D arrays, one for each of the coordinates, provide more efficient
+        # numpy calculations. Converting the data here, outside of the main
+        # loop provided additional 15% speedup in the test runs.
+        bx = (u.bonds.atom2.positions[:, 0] - u.bonds.atom1.positions[:, 0])
+        by = (u.bonds.atom2.positions[:, 1] - u.bonds.atom1.positions[:, 1])
+        bz = (u.bonds.atom2.positions[:, 2] - u.bonds.atom1.positions[:, 2])
+    
+        bond_components = [bx, by, bz]
+    
+        # Creating 1D arrays with bond midpoints
+        rx = (u.bonds.atom1.positions[:, 0] 
+              + u.bonds.atom2.positions[:, 0]) / 2.
+        ry = (u.bonds.atom1.positions[:, 1]
+              + u.bonds.atom2.positions[:, 1]) / 2.
+        rz = (u.bonds.atom1.positions[:, 2]
+              + u.bonds.atom2.positions[:, 2]) / 2.
+    
+        bond_midpoints = [rx, ry, rz]
+    
+        if not same_molecule:
+            bond_resids = u.bonds.atom1.resids
         else:
-            raise NameError("No pairs of bonds found within range")
-    elif mode == "histogram":
-        norm = np.sum(cos_sq_raw_hist * np.diff(bin_edges))
-        print("Norm " + str(norm) + "\n")
-        cos_sq_hist = cos_sq_raw_hist / norm
-        return cos_sq_hist
+            bond_resids = None
+    
+        for bond in u.bonds:
+            # Determine the reference vector components and midpoint
+            # from the bond coordinates
+            ref_components = bond.atoms[1].position - bond.atoms[0].position
+            ref_midpoint = (bond.atoms[0].position
+                            + bond.atoms[1].position) / 2.
+            # If needed, exclude bonds from the same molecule
+            if not same_molecule:
+                excluded_resids = bond.atoms[0].resid
+            else:
+                excluded_resids = None
+            # Calculate ordering parameter value for the reference bond
+            cos_sq_masked = calculate_cos_sq_for_reference(
+                bond_components, bond_midpoints, ref_components, ref_midpoint,
+                u.dimensions, r_min = r_min, r_max = r_max,
+                vector_attributes = bond_resids,
+                excluded_attributes = excluded_resids)
+            
+            if mode == "average":
+                if np.ma.count(cos_sq_masked) > 0:
+                    cos_sq_sum += np.ma.average(cos_sq_masked)
+                    i_s += 1
+                else:
+                    pass
+                
+            elif mode == "histogram":
+                cos_sq_hist_increment, _ = np.histogram(
+                    np.ma.compressed(cos_sq_masked),
+                    bins = n_bins, range = (0.,1.))
+                cos_sq_raw_hist += cos_sq_hist_increment
+
+        if mode == "average":
+            if i_s > 0:
+                # Normalize the values. Normalization procedure ensures that
+                # double consideration of each of the bonds doesn't affect
+                # the result
+                s = 1.5 * cos_sq_sum / i_s - 0.5
+                result.append(s)
+            else:
+                raise NameError("No pairs of bonds found within range")
+        elif mode == "histogram":
+            norm = np.sum(cos_sq_raw_hist * np.diff(bin_edges))
+            print("Norm " + str(norm) + "\n")
+            cos_sq_hist = cos_sq_raw_hist / norm
+            result.append(cos_sq_hist)
+    return result
 
 if __name__ == "__main__":
     
@@ -140,7 +151,8 @@ if __name__ == "__main__":
         description = 'Calculate local ordering parameter')
 
     parser.add_argument(
-        'input', metavar = 'INPUT', action = "store", help = "input file")
+        'input', metavar = 'INPUT', action = "store", nargs = '+',
+        help = "input files")
 
     parser.add_argument(
         '--r_max', metavar = 'R_max', type = float, nargs = '?',
@@ -160,17 +172,19 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--same-molecule", action = "store_true",
-        help = "Hide the bonds transversing the periodic boundary conditions")
+        help = "Take into account bonds from the same molecule")
+    
 
     args = parser.parse_args()
 
-    u = mda.Universe(args.input)
+    u = mda.Universe(*args.input)
     
     s = calculate_orientation_order_parameter(u, r_min = args.r_min,
                                               r_max = args.r_max,
                                               mode = args.mode,
                                               n_bins = args.n_bins,
                                               same_molecule
-                                              = args.same_molecule)
+                                              = args.same_molecule,
+                                              )
 
     print(str(s) + "\n")
