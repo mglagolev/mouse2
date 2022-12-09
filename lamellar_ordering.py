@@ -21,6 +21,15 @@ import sys
 import MDAnalysis as mda
 from MDAnalysis import transformations
 
+def normalize_vectors(vectors):
+    """
+    Normalize an array of vectors
+
+    """
+    shape = vectors.shape
+    norms = np.linalg.norm(vectors, axis = 1).reshape((shape[0], 1))
+    return vectors / norms
+
 def normal_vector(dir_vectors):
     """
     Calculate the normal vector, as the vector corresponding
@@ -99,30 +108,29 @@ def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B):
         B_com = np.asarray(B_com_list)
         # Calculate the end-to-end vectors for both blocks and the vectors
         # between the centers of mass of the blocks
-        block_A_vectors = A_end - A_start
-        block_B_vectors = B_end - B_start
-        com_vectors = B_com - A_com
-        lam_norm = normal_vector(com_vectors)
+        block_A_vectors_normed = normalize_vectors(A_end - A_start)
+        block_B_vectors_normed = normalize_vectors(B_end - B_start)
+        com_vectors_normed = normalize_vectors(B_com - A_com)
+        lam_norm = normal_vector(com_vectors_normed)
         # the normal to the lamella
         sys.stderr.write("Eigen vector "+str(lam_norm)+"\n")
-        sk = 1.5 * np.dot(com_vectors, lam_norm) - 0.5
-        sk_average = np.average(sk)
-        sk_histogram = np.histogram(sk)
-        sys.stderr.write("Sk parameter = "+str(sk_average)+"\n")
-        sys.stderr.write("Sk histogram = "+str(sk_histogram)+"\n")
+        sk_B = 1.5 * np.square(np.dot(block_B_vectors_normed, lam_norm)) - 0.5
+        sk_B_average = np.average(sk_B)
+        sk_B_histogram = np.histogram(sk_B)
+        sys.stderr.write("Sk_B parameter = "+str(sk_B_average)+"\n")
+        sys.stderr.write("Sk_B histogram = "+str(sk_B_histogram)+"\n")
         # calculate the directors for both blocks using the same approach
-        block_A_director = normal_vector(block_A_vectors)
-        block_B_director = normal_vector(block_B_vectors)
+        block_A_director = normal_vector(block_A_vectors_normed)
+        block_B_director = normal_vector(block_B_vectors_normed)
         sys.stderr.write("Eigen vector for B director "
                          + str(block_B_director)+"\n")
-        
         h_B = np.cross(block_B_director, lam_norm)
         sys.stderr.write("h_B vector "+str(h_B)+"\n")
         if np.linalg.norm(h_B) == 0.:
             sys.stderr.write("Vector h_B = 0"+"\n")
         else:
-            pk_B, v_B = pk_v(block_B_vectors, lam_norm, h_B)
-            tan_2theta = v_B / (sk_average - 0.5 * pk_B)
+            pk_B, v_B = pk_v(block_B_vectors_normed, lam_norm, h_B)
+            tan_2theta = v_B / (sk_B_average - 0.5 * pk_B)
             theta = np.arctan (tan_2theta) / 2.0
             sys.stderr.write("P_k_B = " + str(pk_B) + "; V_B = "
                              + str(v_B) + "\n")
@@ -141,7 +149,7 @@ if __name__ == "__main__":
         help = "input files")
 
     parser.add_argument(
-        '--block-types', metavar = 'TYPES', type = str, nargs = '*',
+        '--block-types', metavar = 'TYPES', type = str, nargs = 2,
         default = ["1", "2"],
         help = "bead types for the blocks (provide 0 or 2 arguments)")
     
