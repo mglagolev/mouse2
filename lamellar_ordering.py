@@ -17,9 +17,9 @@
 
 
 import numpy as np
-import sys
 import MDAnalysis as mda
 from MDAnalysis import transformations
+import json
 
 def normalize_vectors(vectors):
     """
@@ -47,9 +47,9 @@ def normal_vector(dir_vectors):
     normal_vector = eigen_vecs[:,max_col]
     return normal_vector
 
-def pk_v(vectors, reference_2, reference_3):
+def pk_v_theta(vectors, reference_2, reference_3, average_sk):
     """
-    Calculate order parameters Pk and V,
+    Calculate order parameters Pk, V, and the angle theta
     as described in https://doi.org/10.1063/5.0005854
 
     """
@@ -68,14 +68,59 @@ def pk_v(vectors, reference_2, reference_3):
     v = np.sin(2. * gamma) * np.cos(phi)
     average_pk = np.average(pk)
     average_v = np.average(v)
-    return average_pk, average_v
+    tan_2theta = average_v / ( average_sk - 0.5 * average_pk)
+    theta = np.arctan (tan_2theta) / 2.0
+    return average_pk, average_v, theta
 
 
-def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B):
+def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B,
+                                 store_A_values = True,
+                                 store_B_values = True,
+                                 store_block_values = False):
+    """
+    Calculate the molecular ordering parameters for lamellae
+    containing tilted copolymer blocks, as described in the
+    https://doi.org/10.1063/5.0005854
+
+    Parameters
+    ----------
+    u : mda.Universe
+        DESCRIPTION.
+    type_A : int
+        Bead type for block A beads in the Universe.
+    type_B : int
+        Bead type for block A beads in the Universe.
+    store_A_values : bool, optional
+        Calculate and store the values for A blocks. The default is True.
+    store_B_values : bool, optional
+        Calculate and store the values for B blocks. The default is True.
+    store_block_values : bool, optional
+        Store the lists of values for individual blocks. The default is False.
+
+    Returns
+    -------
+    {description: "Lamellar ordering parameters Sk, h, Pk, theta",
+     data: {ts1: {"lam_norm": lamellae_director,
+                  ["director_A": block_A_director(optional)],
+                  ["ave_sk_A": Sk_value_for_block_A(optional)],
+                  ["h_A": H_value_for_block_A],
+                  ["pk_A": Pk_value_for_block_A],
+                  ["v_A": V_value_for_block_A],
+                  ["values_sk_A": Sk values for block A of each molecule]},
+                  [Same set of values for block B (if store_B_values is True)]}
+            ts2: { Same set of values for the next timestep },
+            ....
+           }
+    }
+
+    """
     # Unwrap the atom coordinates
     unwrap = transformations.unwrap(u.atoms)
     u.trajectory.add_transformations(unwrap)
+    data = {}
     for ts in u.trajectory:
+        # Create a structure for data for this timestep
+        values = {}
         # Create data structures for the values for individual residues
         # Optimize performance by creating lists and then converting to NumPy
         A_start_list, A_end_list, A_com_list = [], [], []
@@ -113,29 +158,50 @@ def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B):
         com_vectors_normed = normalize_vectors(B_com - A_com)
         lam_norm = normal_vector(com_vectors_normed)
         # the normal to the lamella
-        sys.stderr.write("Eigen vector "+str(lam_norm)+"\n")
-        sk_B = 1.5 * np.square(np.dot(block_B_vectors_normed, lam_norm)) - 0.5
-        sk_B_average = np.average(sk_B)
-        sk_B_histogram = np.histogram(sk_B)
-        sys.stderr.write("Sk_B parameter = "+str(sk_B_average)+"\n")
-        sys.stderr.write("Sk_B histogram = "+str(sk_B_histogram)+"\n")
-        # calculate the directors for both blocks using the same approach
-        block_A_director = normal_vector(block_A_vectors_normed)
-        block_B_director = normal_vector(block_B_vectors_normed)
-        sys.stderr.write("Eigen vector for B director "
-                         + str(block_B_director)+"\n")
-        h_B = np.cross(block_B_director, lam_norm)
-        sys.stderr.write("h_B vector "+str(h_B)+"\n")
-        if np.linalg.norm(h_B) == 0.:
-            sys.stderr.write("Vector h_B = 0"+"\n")
-        else:
-            pk_B, v_B = pk_v(block_B_vectors_normed, lam_norm, h_B)
-            tan_2theta = v_B / (sk_B_average - 0.5 * pk_B)
-            theta = np.arctan (tan_2theta) / 2.0
-            sys.stderr.write("P_k_B = " + str(pk_B) + "; V_B = "
-                             + str(v_B) + "\n")
-            sys.stderr.write("tan_2theta = " + str(tan_2theta) 
-                             + "; theta = " + str(theta) + "\n")
+        values["lam_norm"] = lam_norm.tolist()
+        # Calculate the values for block A, if required
+        if store_A_values:
+            # Calculate the director of block A using the same approach:
+            block_A_director = normal_vector(block_A_vectors_normed)
+            values["director_A"] = block_A_director.tolist()
+            # Calculate the list of Sk values for block A:
+            sk_A = 1.5 * np.square(np.dot(block_A_vectors_normed, 
+                                          lam_norm)) - 0.5
+            values["ave_sk_A"] = np.average(sk_A)
+            # Calculate the H value for block A:
+            values["h_A"] = np.cross(block_A_director, lam_norm).tolist()
+            # If the tilt is non-zero, calculate the additional parameters:
+            if np.linalg.norm(values["h_A"]) != 0.:
+                values["pk_A"], values["v_A"], values ["theta_A"] = pk_v_theta(
+                                             block_A_vectors_normed, lam_norm, 
+                                             values["h_A"], values["ave_sk_A"])
+            # If requested, store the values for individual A blocks:
+            if store_block_values:
+                values["values_sk_A"] = sk_A.tolist()
+        # Calculate the values for block B, if required
+        if store_B_values:
+            # Calculate the director of block B using the same approach:
+            block_B_director = normal_vector(block_B_vectors_normed)
+            values["director_B"] = block_B_director.tolist()
+            # Calculate the list of Sk values for block B:
+            sk_B = 1.5 * np.square(np.dot(block_B_vectors_normed,
+                                          lam_norm)) - 0.5
+            values["ave_sk_B"] = np.average(sk_B)
+            # Calculate the H value for block B:
+            values["h_B"] = np.cross(block_B_director, lam_norm).tolist()
+            # If the tilt is non-zero, calculate the additional parameters:
+            if np.linalg.norm(values["h_B"]) != 0.:
+                values["pk_B"], values["v_B"], values ["theta_B"] = pk_v_theta(
+                                              block_B_vectors_normed, lam_norm, 
+                                             values["h_B"], values["ave_sk_B"])
+            # If requested, store the values for individual B blocks:
+            if store_block_values:
+                values["values_sk_B"] = sk_B.tolist()
+        data[str(ts)] = values
+    return { "description" : "Lamellar ordering parameters Sk, h, Pk, theta",
+             "data": data }
+    
+            
         
 if __name__ == "__main__":
     
@@ -151,12 +217,29 @@ if __name__ == "__main__":
     parser.add_argument(
         '--block-types', metavar = 'TYPES', type = str, nargs = 2,
         default = ["1", "2"],
-        help = "bead types for the blocks (provide 0 or 2 arguments)")
+        help = "bead types for the blocks A dnd B (provide 0 or 2 arguments)")
+    
+    parser.add_argument(
+        '--A', action = "store_true", help = "Calculate the values for "
+                                           + "block A")
+    
+    parser.add_argument(
+        '--B', action = "store_true", help = "Calculate the values for "
+                                           + "block B")
+    
+    parser.add_argument(
+        '--verbose', action = "store_true", help = "Store the values for "
+                                                 + "individual molecules")
     
 
     args = parser.parse_args()
 
     u = mda.Universe(*args.input)
     
-    lamellar_ordering_parameters(u, args.block_types[0],
-                                             args.block_types[1])
+    result = lamellar_ordering_parameters(u, args.block_types[0],
+                                             args.block_types[1],
+                                             store_A_values = args.A,
+                                             store_B_values = args.B,
+                                             store_block_values = args.verbose
+                                             )
+    print(json.dumps(result, indent = 2))
