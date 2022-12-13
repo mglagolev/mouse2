@@ -58,10 +58,10 @@ def calculate_cos_sq_for_reference(
 
     Returns
     -------
-    numpy.ma.masked_array
-        The array with the resulting values together with the mask, marking
-        the values that do not satisfy the selection criteria: cutoff radii
-        and blacklisted attributes
+    numpy.ndarray
+        The array with the resulting values of squared cosine between the
+        array of vectors and the reference vector, taking into account the
+        cutoffs and the filtering criteria.
 
     """
     # If r_max is set to 0, determine the largest possible cutoff based on box.
@@ -92,5 +92,6 @@ def calculate_cos_sq_for_reference(
           / np.linalg.norm(ref_components)**2
           / np.linalg.norm(vector_components, axis = 0)**2)
     
-    # Mask the invalid values and return
-    return np.ma.array(cos_sq_normed, mask = masked_data)
+    # Mask the invalid values, compress and return
+    masked_cos_sq = np.ma.array(cos_sq_normed, mask = masked_data)
+    return np.ma.compressed(masked_cos_sq)
