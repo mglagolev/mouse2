@@ -81,6 +81,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
     else:
         atoms = u.atoms
     
+    # Initialize the dictionary with the data for all the timesteps
     data = {}
     
     for ts in u.trajectory:
@@ -89,6 +90,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
         atom_resids = atoms.resids
         atom_coords = atoms.positions
         natoms = len(atoms)
+        
         #For each k:
         for k in k_list:
             # Here we create 2 sets of arrays, one padded on the right
@@ -101,10 +103,13 @@ def backbone_twist(u: mda.Universe, k_list: list,
                                     np.full((k,), False)))
             valid2 = np.concatenate((np.full((k,), False),
                                      np.full((natoms,), True)))
+            
             #Calculate interatom vectors    
             vector_coords = coords2 - coords1
+            
             # Check if both ends of the vector are not the padded values:
             valid_atoms = np.logical_and(valid1, valid2)
+            
             # If the calculations shall be restricted to the atoms with
             # same residue ids, we shall do additional checks
             if not different_molecules:
@@ -116,6 +121,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
             else:
                 valid_vector = valid_atoms
             mask = np.logical_not(valid_vector)
+            
             # Create numpy array of valid vectors and associated residue
             # ids array, and compress the arrays.
             masked_vectors = np.ma.masked_array(vector_coords,
@@ -124,13 +130,16 @@ def backbone_twist(u: mda.Universe, k_list: list,
             if not different_molecules:
                 masked_resids = np.ma.masked_array(vector_resids, mask)
                 resids = np.ma.compressed(masked_resids)
+            
             # Determine the length of the array of valid vectors:
             nvectors = len(vectors)
+            
             # Create the list of vectors and associated list of residues
             #Pad the interatom vectors by k and 2k
             r1 = np.pad(vectors, ((0, 2*k), (0, 0)), constant_values = 1.)
             r2 = np.pad(vectors, (( k,  k), (0, 0)), constant_values = 1.)
             r3 = np.pad(vectors, ((2*k, 0), (0, 0)), constant_values = 1.)
+            
             # Determine the validity as the validity of all three vectors with
             # the same index
             valid1 = np.concatenate((np.full((nvectors,), True),
@@ -153,6 +162,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
             else:
                 valid_vectors = valid123
             phi_mask = np.logical_not(valid_vectors)
+            
             # Calculate the angles using the values from 3 arrays
             # TODO: add checks for zero-length r1_x_r2 or r2_x_r3
             r1_x_r2_normed = normalize_vectors(np.cross(r1, r2))
@@ -166,9 +176,11 @@ def backbone_twist(u: mda.Universe, k_list: list,
             all_phi = np.arccos(cos_phi) * np.sign(sin_phi)
             masked_phi = np.ma.masked_array(all_phi, mask = phi_mask)
             phi = np.ma.compressed(masked_phi)
+            
             # Add the list of values for the current k to the dictionary for
             # the current timestep:
             values[k] = phi.tolist()
+        
         # Add the dictionary for all k values for the current timestep to the
         # common data dictionary:
         data[str(ts)] = values
