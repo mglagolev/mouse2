@@ -8,6 +8,7 @@ Created on Fri Nov 25 19:59:20 2022
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import numpy as np
+import json
 
 def calculate_bond_autocorrelations(u: mda.Universe, k_max,
                                     selection = None,
@@ -21,7 +22,7 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
     Parameters
     ----------
     u : mda.Universe
-        DESCRIPTION.
+        Input data for analysis as MDAnalysis Universe.
     k_max : integer
         The maximum value of the distance between the bonds along the backbone
     different_molecules : bool
@@ -30,10 +31,25 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
 
     Returns
     -------
-    For every timestep a list of float values [C(0), C(1), ...]
-    The lists are wrapped into a list for all the timesteps.
+    {description: "Bond vectors autocorrelation function, for k in 
+                   [0,...,k_max] the vectors belonging to different
+                   molecules are (not) taken into account",
+     data: {ts1: [c(0), c(1), c(2), ..., c(k_max)],
+            ts2: [c(0), c(1), c(2), ..., c(k_max)],
+            ....
+           }
+    }
 
     """
+    # Prepare the description of the output:
+    description = "Bond vectors autocorrelation function, for k in [0,...,"
+    description += str(k_max)
+    if different_molecules:
+        description += ("], the vectors belonging to different molecules"
+                    + "are taken into account")
+    else:
+        description += ("], the vectors belonging to different molecules"
+                    + "are not taken into account")
     # Unwrap all the coordinates, so that all the bond lengths are correct.
     unwrap = transformations.unwrap(u.atoms)
     u.trajectory.add_transformations(unwrap)
@@ -44,7 +60,8 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
     else:
         atoms = u.atoms
     
-    results = []
+    # Create the dictionary structure for the data for all timesteps
+    data = {}
     
     for ts in u.trajectory:
         # List of c[k] = c(k), k = 0, 1, 2, ...
@@ -59,9 +76,11 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
         for k in range(0, k_max + 1):
             # Create two array shifted by k, by padding the arrays with
             # the values of "1." (so that vector length is not zero)
+            #TODO: replace with np.pad
             b1 = np.concatenate((b, np.full((k, 3), 1.)), axis = 0)
             b2 = np.concatenate((np.full((k, 3), 1.), b), axis = 0)
             # Consider the calculation result valid if neither value is padded
+            # TODO: replace with np.pad
             valid1 = np.concatenate((np.full((nbonds,), True),
                                     np.full((k,), False)))
             valid2 = np.concatenate((np.full((k,), False),
@@ -71,6 +90,7 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
             # then also check for the equality of the resids
             if not different_molecules:
                 # Pad the residue id arrays
+                # TODO: replace with np.pad
                 resid1 = np.concatenate((bond_resids, np.zeros((k,))))
                 resid2 = np.concatenate((np.zeros((k,)), bond_resids))
                 # Take into account only molecules with same residue id
@@ -84,8 +104,8 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
             c_masked = np.ma.masked_array(c, mask = mask)
             c_average = np.ma.average(c_masked)
             ck.append(c_average)
-        results.append(ck)
-    return results
+        data[str(ts)] = ck
+    return { "description" : description, "data" : data }
 
 if __name__ == "__main__":
     
@@ -100,7 +120,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         '--k_max', metavar = 'k_max', type = int, nargs = '?',
-        default = 0.,
+        default = 0,
         help = "maximum distance between the bonds along the backbone")
     
     parser.add_argument(
@@ -118,13 +138,10 @@ if __name__ == "__main__":
 
     u = mda.Universe(*args.input)
     
-    ck_series = calculate_bond_autocorrelations(u, k_max = args.k_max,
+    result = calculate_bond_autocorrelations(u, k_max = args.k_max,
                                                 selection = args.selection,
                                                 different_molecules =
                                                 args.different_molecules)
     
     # Print the values:
-    for ck_values in ck_series:
-        for k in range(len(ck_values)):
-            print(str(k) + " " + str(ck_values[k]))
-        print("\n")
+    print(json.dumps(result, indent = 2))
