@@ -20,15 +20,8 @@ import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import json
+from utilities import normalize_vectors
 
-def normalize_vectors(vectors):
-    """
-    Normalize an array of vectors
-
-    """
-    shape = vectors.shape
-    norms = np.linalg.norm(vectors, axis = 1).reshape((shape[0], 1))
-    return vectors / norms
 
 def normal_vector(dir_vectors):
     """
