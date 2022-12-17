@@ -7,7 +7,7 @@ Created on Tue Oct 18 14:46:18 2022
 """
 
 import numpy as np
-from neighbor import neighbor_mask
+from lib.neighbor import neighbor_mask
 
     
 def calculate_cos_sq_for_reference(

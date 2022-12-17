@@ -179,3 +179,65 @@ def neighbor_mask(coordinates: [np.ndarray, np.ndarray, np.ndarray],
             out_of_range = np.zeros(coordinates[0].size)
     
     return out_of_range
+
+def calculate_neighborlists_from_distances(
+        atom_indices: np.ndarray,
+        atom_coordinates: [np.ndarray, np.ndarray, np.ndarray],
+        box = [0., 0., 0.], r_max = 0.):
+    """
+    Return a list of neighboring atom indices for each atom in the
+    input array. If a non-zero box value is provided, the periodic
+    boundary conditions are taken into account.
+
+    Parameters
+    ----------
+    atom_indices : np.ndarray
+        Array of indices of the atoms, as provided by MDAnalysis library
+    atom_coordinates : [np.ndarray, np.ndarray, np.ndarray]
+        3 1-d arrays of the coordinates of atoms.
+    box : TYPE, optional
+        Periodic unit cell. The default is [0., 0., 0.] (no periodic boundary)
+    r_max : FLOAT, optional
+        Maximum distance between the particles to be considered neighbors.
+
+    Raises
+    ------
+    NameError
+        If the dimensions of the index and coordinate datasets differ, this
+        error is raised.
+
+    Returns
+    -------
+    neighborlists : DICT
+        Dictionary with atom indices as keys and list of neighbor indices
+        for each atom as values.
+
+    """
+    
+    neighborlists = {}
+    
+    if (min(atom_indices.size, atom_coordinates[0].size,
+           atom_coordinates[1].size, atom_coordinates[2].size) !=
+       max(atom_indices.size, atom_coordinates[0].size,
+              atom_coordinates[1].size, atom_coordinates[2].size)):
+        raise NameError("The dimensions of input datasets differ")
+    
+    #Iterate over atoms
+    for i in range(atom_indices.size):
+        
+        ref_index = atom_indices[i]
+        
+        ref_coordinates = [atom_coordinates[0][i],
+                           atom_coordinates[1][i],
+                           atom_coordinates[2][i]]
+        
+        out_of_range = neighbor_mask(atom_coordinates, ref_coordinates,
+                                      box, r_max = r_max)
+        
+        masked_neighbors = np.ma.array(atom_indices, mask = out_of_range)
+        
+        compressed_neighbors = np.ma.compressed(masked_neighbors)
+        
+        neighborlists[ref_index] = np.ndarray.tolist(compressed_neighbors)
+        
+    return neighborlists

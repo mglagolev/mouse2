@@ -20,7 +20,7 @@ import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import json
-from utilities import normalize_vectors
+from lib.utilities import normalize_vectors
 
 
 def normal_vector(dir_vectors):
@@ -193,46 +193,3 @@ def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B,
         data[str(ts)] = values
     return { "description" : "Lamellar ordering parameters Sk, h, Pk, theta",
              "data": data }
-    
-            
-        
-if __name__ == "__main__":
-    
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description = 'Calculate the lamellar ordering parameter')
-
-    parser.add_argument(
-        'input', metavar = 'INPUT', action = "store", nargs = '+',
-        help = "input files")
-
-    parser.add_argument(
-        '--block-types', metavar = 'TYPES', type = str, nargs = 2,
-        default = ["1", "2"],
-        help = "bead types for the blocks A dnd B (provide 0 or 2 arguments)")
-    
-    parser.add_argument(
-        '--A', action = "store_true", help = "Calculate the values for "
-                                           + "block A")
-    
-    parser.add_argument(
-        '--B', action = "store_true", help = "Calculate the values for "
-                                           + "block B")
-    
-    parser.add_argument(
-        '--verbose', action = "store_true", help = "Store the values for "
-                                                 + "individual molecules")
-    
-
-    args = parser.parse_args()
-
-    u = mda.Universe(*args.input)
-    
-    result = lamellar_ordering_parameters(u, args.block_types[0],
-                                             args.block_types[1],
-                                             store_A_values = args.A,
-                                             store_B_values = args.B,
-                                             store_block_values = args.verbose
-                                             )
-    print(json.dumps(result, indent = 2))

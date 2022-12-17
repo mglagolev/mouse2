@@ -9,7 +9,7 @@ Created on Fri Oct 14 17:20:41 2022
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import numpy as np
-from ordering import calculate_cos_sq_for_reference
+from lib.ordering import calculate_cos_sq_for_reference
 import json
 
 def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):
