@@ -1,22 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Dec 17 16:54:40 2022
 
-@author: misha
+    Calculate the molecular ordering parameters for lamellae
+    containing tilted copolymer blocks, as described in the
+    paper by M. A. Osipov, M. V. Gorkunov, A. V. Berezkin,
+    A. A. Antonov and Y. V. Kudryavtsev "Molecular theory
+    of the tilting transition and computer simulations of
+    the tilted lamellar phase of rod–coil diblock copolymers"
+    https://doi.org/10.1063/5.0005854
+    
+
+@author: Anna Glagoleva, Mikhail Glagolev
+
 """
 
 import MDAnalysis as mda
 import argparse
 import json
-from lib.lamellar_ordering import lamellar_ordering_parameters
+from lib.lamellar_orientation import lamellar_orientational_ordering_parameters
 
 
 if __name__ == "__main__":
     
 
     parser = argparse.ArgumentParser(
-        description = 'Calculate the lamellar ordering parameter')
+        description = 'Calculate the lamellar orientational ordering'
+        + ' parameters')
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',
@@ -44,7 +54,8 @@ if __name__ == "__main__":
 
     u = mda.Universe(*args.input)
     
-    result = lamellar_ordering_parameters(u, args.block_types[0],
+    result = lamellar_orientational_ordering_parameters(u, 
+                                             args.block_types[0],
                                              args.block_types[1],
                                              store_A_values = args.A,
                                              store_B_values = args.B,

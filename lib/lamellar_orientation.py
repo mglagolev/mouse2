@@ -19,7 +19,6 @@
 import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
-import json
 from lib.utilities import normalize_vectors
 
 
@@ -66,13 +65,14 @@ def pk_v_theta(vectors, reference_2, reference_3, average_sk):
     return average_pk, average_v, theta
 
 
-def lamellar_ordering_parameters(u: mda.Universe, type_A, type_B,
-                                 store_A_values = True,
-                                 store_B_values = True,
-                                 store_block_values = False):
+def lamellar_orientational_ordering_parameters(u: mda.Universe, 
+                                               type_A, type_B,
+                                               store_A_values = True,
+                                               store_B_values = True,
+                                               store_block_values = False):
     """
-    Calculate the molecular ordering parameters for lamellae
-    containing tilted copolymer blocks, as described in the
+    Calculate the molecular orientational ordering parameters 
+    for lamellae containing tilted copolymer blocks, as described in the
     https://doi.org/10.1063/5.0005854
 
     Parameters
