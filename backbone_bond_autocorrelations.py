@@ -76,11 +76,9 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
         for k in range(0, k_max + 1):
             # Create two array shifted by k, by padding the arrays with
             # the values of "1." (so that vector length is not zero)
-            #TODO: replace with np.pad
-            b1 = np.concatenate((b, np.full((k, 3), 1.)), axis = 0)
-            b2 = np.concatenate((np.full((k, 3), 1.), b), axis = 0)
+            b1 = np.pad(b, ((0, k), (0, 0)), constant_values = 1.)
+            b2 = np.pad(b, ((k, 0), (0, 0)), constant_values = 1.)
             # Consider the calculation result valid if neither value is padded
-            # TODO: replace with np.pad
             valid1 = np.concatenate((np.full((nbonds,), True),
                                     np.full((k,), False)))
             valid2 = np.concatenate((np.full((k,), False),
@@ -90,9 +88,8 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
             # then also check for the equality of the resids
             if not different_molecules:
                 # Pad the residue id arrays
-                # TODO: replace with np.pad
-                resid1 = np.concatenate((bond_resids, np.zeros((k,))))
-                resid2 = np.concatenate((np.zeros((k,)), bond_resids))
+                resid1 = np.pad(bond_resids, (0, k), constant_values = 0)
+                resid2 = np.pad(bond_resids, (k, 0), constant_values = 0)
                 # Take into account only molecules with same residue id
                 valid = np.logical_and(valid, np.equal(resid1, resid2))
             # Mask is True for the values that are not valid    
