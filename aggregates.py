@@ -19,8 +19,13 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description = 'Determine aggregates, based on lists of neighbors\
-        determined by inter-particle distance')
+        description =
+        """This utility returns a data structure containing list of aggregates
+        for all of the timesteps in the MDAnalysis universe.
+        Each aggregate is determined as a complete graph of neighbors.
+        The atoms are considered neighbors if the distance between their
+        centers does not exceed r_neigh.
+        Each aggregate is represented as a list of MDAnalysis atom indices.""")
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',

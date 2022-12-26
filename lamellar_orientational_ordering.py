@@ -25,8 +25,16 @@ if __name__ == "__main__":
     
 
     parser = argparse.ArgumentParser(
-        description = 'Calculate the lamellar orientational ordering'
-        + ' parameters')
+        description = """ 
+        Calculate the molecular ordering parameters for lamellae
+        containing tilted copolymer blocks, as described in the
+        paper by M. A. Osipov, M. V. Gorkunov, A. V. Berezkin,
+        A. A. Antonov and Y. V. Kudryavtsev "Molecular theory
+        of the tilting transition and computer simulations of
+        the tilted lamellar phase of rod–coil diblock copolymers"
+        https://doi.org/10.1063/5.0005854.
+        A usage case is also presented in https://doi.org/10.1039/D1SM00759A
+        """)
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',

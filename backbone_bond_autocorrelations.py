@@ -17,7 +17,7 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
     
     Calculate the autocorrelation function of the polymer bonds.
     The formula is presented in https://doi.org/10.1134/S0965545X10070102
-    Application in all-atom simulations: https://doi.org/10.3390/polym11122056
+    Application to all-atom simulations: https://doi.org/10.3390/polym11122056
 
     Parameters
     ----------
@@ -109,7 +109,10 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description = 'Calculate backbone bonds autocorrelations')
+        description = """Calculate the autocorrelation function of the 
+        polymer bonds. The formula is presented in 
+        https://doi.org/10.1134/S0965545X10070102 Application to
+        all-atom simulations: https://doi.org/10.3390/polym11122056""")
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',

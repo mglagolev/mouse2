@@ -25,7 +25,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
     
     For helical polymers we suppose selecting k as a multiple of the number
     of monomer units per helix turn and several times smaller than the period
-    of a superhelical structure. The example of the analysis is provided in
+    of a superhelical structure. The example of the analysis is provided in the
     Supplementary Information for https://doi.org/10.1016/j.polymer.2022.124974
     
     The data for trajectory timesteps [ts1, ts2, ...] and the values of k
@@ -193,8 +193,12 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description = 'Calculate the dihedral angles corresponding to '
-                    + 'the backbone twist of a macromolecule')
+        description =  """
+         Calculate the list of dihedral angles, formed by the following
+         vectors: (r_i, r_{i+k}), (r_{i+k}, r_{i+2*k}), (r_{i+2*k}, r_{i+3*k})
+         where i is the index of a monomer unit. The example of the analysis
+         is provided in the Supplementary Information for
+         https://doi.org/10.1016/j.polymer.2022.124974""")
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',

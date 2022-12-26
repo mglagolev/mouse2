@@ -34,11 +34,12 @@ def calculate_orientation_order_parameter(
         mode = 'average', same_molecule = True):
     """
     
-    This function calculates local ordering parameter for bonds.
-    The parameter is calculated as S = 3/2 ( <(cos(gamma))^2>) - 1/2)
-    where "gamma" is the angle between the bond vectors. The distance
-    between the middle points of the bond vectors shall be in the range
-    [rmin, rmax].
+    This function calculates the angles between the bonds, if their
+    midpoints are located within the range of [rmin, rmax].
+    The local ordering parameter is then calculated as
+    S = 3/2 ( <(cos(gamma))^2>) - 1/2)
+    where "gamma" is the angle between the bond vectors.
+    The distributions are stored if the "histogram" mode is selected.
 
     Parameters
     ----------
@@ -199,7 +200,15 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description = 'Calculate local ordering parameter')
+        description = """This utility calculates the angles between the bonds,
+        if their midpoints are located within the range of [rmin, rmax].
+        The local ordering parameter is then calculated as
+        S = 3/2 ( <(cos(gamma))^2>) - 1/2)
+        where "gamma" is the angle between the bond vectors.
+        The distributions are stored if the --histogram flag is provided.
+        The example applications are
+        https://doi.org/10.1016/j.polymer.2020.122232
+        and https://doi.org/10.1016/j.polymer.2022.124974""")
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',
