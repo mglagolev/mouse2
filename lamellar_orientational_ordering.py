@@ -35,7 +35,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '--block-types', metavar = 'TYPES', type = str, nargs = 2,
         default = ["1", "2"],
-        help = "bead types for the blocks A dnd B (provide 0 or 2 arguments)")
+        help = "bead types for the blocks A dnd B (provide 2 arguments,"
+             + " without the option the default values 1 and 2 are used)")
     
     parser.add_argument(
         '--A', action = "store_true", help = "Calculate the values for "
