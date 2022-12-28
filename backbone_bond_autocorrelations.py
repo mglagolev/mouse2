@@ -132,6 +132,9 @@ if __name__ == "__main__":
         "--different-molecules", action = "store_true",
         help = "Calculate corrlations based on particle index number,\
             even if the bonds belong to different molecules")
+            
+    parser.add_argument('--plot', action = "store_true",
+                            help = "Plot the results")
     
 
     args = parser.parse_args()
@@ -145,3 +148,18 @@ if __name__ == "__main__":
     
     # Print the values:
     print(json.dumps(result, indent = 2))
+    
+    # Plot the values, if requested, with
+    # the values averaged across the timesteps
+    if args.plot:
+        import matplotlib.pyplot as plt
+        # Average the data across the timesteps
+        summed_data = np.ndarray((args.k_max + 1,))
+        for ts in result["data"]:
+            summed_data += np.asarray(result["data"][ts])
+        averaged_data = summed_data / len(result["data"])
+        plt.plot(range(args.k_max + 1), averaged_data)
+        plt.xlabel('k', fontsize = 18)
+        plt.ylabel('C(k)', fontsize = 18)
+        plt.legend(shadow = False, fontsize = 18)
+        plt.show()
