@@ -175,11 +175,12 @@ if __name__ == "__main__":
         # Fit the averaged results with a fitting function
         from scipy.optimize import curve_fit
         def fitting_function(x, a, p, gamma, b):
-            return a * np.cos(2. * np.pi * x / p) * np.exp(x * gamma) + b
+            return a * (np.cos(2. * np.pi * x / p) + b) * np.exp(x * gamma)
         initial_guess = [ A_GUESS, args.p_guess, GAMMA_GUESS, B_GUESS ]
+        # Fit the averaged data, starting with k=1
         params, covariance = curve_fit(fitting_function,
-                                       list(range(args.k_max + 1 )), 
-                                       averaged_data, p0=initial_guess)
+                                       list(range(1, args.k_max + 1 )), 
+                                       averaged_data[1:], p0=initial_guess)
             
     # Plot the values, if requested, with
     # the values averaged across the timesteps
