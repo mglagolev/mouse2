@@ -13,7 +13,7 @@ import json
 # Fitting parameters for the autocorrelation function
 A_GUESS = 1.
 P_GUESS = 3.
-GAMMA_GUESS = 0.
+BETA_GUESS = 0.
 B_GUESS = 0.
 
 FIT_PLOT_DENSITY = 10 # Must be integer
@@ -175,9 +175,9 @@ if __name__ == "__main__":
     if args.fit:
         # Fit the averaged results with a fitting function
         from scipy.optimize import curve_fit
-        def fitting_function(x, a, p, gamma, b):
-            return a * (np.cos(2. * np.pi * x / p) + b) * np.exp(x * gamma)
-        initial_guess = [ A_GUESS, args.p_guess, GAMMA_GUESS, B_GUESS ]
+        def fitting_function(x, a, p, beta, b):
+            return a * (np.cos(2. * np.pi * x / p) + b) * np.exp(x * beta)
+        initial_guess = [ A_GUESS, args.p_guess, BETA_GUESS, B_GUESS ]
         # Fit the averaged data, starting with k=1
         params, covariance = curve_fit(fitting_function,
                                        list(range(1, args.k_max + 1 )), 
@@ -199,7 +199,7 @@ if __name__ == "__main__":
                                             params[1], params[2], params[3])
             plt.plot(fitting_x, fitting_y,
                      label = "p=%.2f" % params[1] 
-                     + "\ngamma=%.2f" % params[2]
+                     + "\nbeta=%.2f" % params[2]
                      + "\nb=%.2f" % params[3])
         plt.xlabel('k', fontsize = 18)
         plt.ylabel('C(k)', fontsize = 18)
