@@ -202,7 +202,8 @@ if __name__ == "__main__":
 
     parser.add_argument(
         'input', metavar = 'INPUT', action = "store", nargs = '+',
-        help = "input files")
+        help = """input file(s), the format will be guessed by MDAnalysis 
+        based on file extension""")
 
     parser.add_argument(
         '--selection', metavar = 'QUERY', type = str, nargs = '?',

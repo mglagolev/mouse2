@@ -6,6 +6,7 @@ The focus is the chirality of the systems and the local ordering arising from it
 
 The NumPy and MDAnalysis libraries need to be installed to use the scripts, and the
 NetworkX library is additionaly required to use the aggregates.py
+Matplotlib and SciPy are required to use the plotting and fitting options in some of the scripts.
 
 Quick reference:
 
@@ -18,7 +19,7 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056
 
 
 positional arguments:
-  INPUT                 input files
+  INPUT                input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:
   -h, --help            show this help message and exit
@@ -43,7 +44,7 @@ and https://doi.org/10.1016/j.polymer.2022.124974
 
 
 positional arguments:
-  INPUT              input files
+  INPUT              input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:
   -h, --help         show this help message and exit
@@ -65,7 +66,7 @@ A use case is also presented in https://doi.org/10.1039/D1SM00759A
 
 
 positional arguments:
-  INPUT                 input files
+  INPUT                 input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:
   -h, --help            show this help message and exit
@@ -87,7 +88,7 @@ https://doi.org/10.1016/j.polymer.2022.124974
 
 
 positional arguments:
-  INPUT                 input files
+  INPUT                 input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:
   -h, --help            show this help message and exit
@@ -108,7 +109,7 @@ The atoms are considered neighbors if the distance between their centers does no
 Each aggregate is represented as a list of MDAnalysis atom indices.
 
 positional arguments:
-  INPUT                input files
+  INPUT                input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:
   -h, --help           show this help message and exit
