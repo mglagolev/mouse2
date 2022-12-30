@@ -10,6 +10,14 @@ from MDAnalysis import transformations
 import numpy as np
 import json
 
+# Fitting parameters for the autocorrelation function
+A_GUESS = 1.
+P_GUESS = 3.
+GAMMA_GUESS = 0.
+B_GUESS = 0.
+
+FIT_PLOT_DENSITY = 10 # Must be integer
+
 def calculate_bond_autocorrelations(u: mda.Universe, k_max,
                                     selection = None,
                                     different_molecules: bool = False):
@@ -134,7 +142,16 @@ if __name__ == "__main__":
             even if the bonds belong to different molecules")
             
     parser.add_argument('--plot', action = "store_true",
-                            help = "Plot the results")
+                            help = "Plot the averaged results")
+    
+    parser.add_argument('--fit', action = "store_true",
+        help = 
+        "Fit the averaged results with a modulated exponential function")
+    
+    parser.add_argument(
+        '--p_guess', metavar = 'NUMBER', type = float, nargs = '?',
+        default = 3.5,
+        help = "Initial guess for the number of monomer units per turn")
     
 
     args = parser.parse_args()
@@ -145,21 +162,46 @@ if __name__ == "__main__":
                                                 selection = args.selection,
                                                 different_molecules =
                                                 args.different_molecules)
+
     
-    # Print the values:
-    print(json.dumps(result, indent = 2))
-    
-    # Plot the values, if requested, with
-    # the values averaged across the timesteps
-    if args.plot:
-        import matplotlib.pyplot as plt
-        # Average the data across the timesteps
+    if args.plot or args.fit:
+        #Average the data across the timesteps
         summed_data = np.ndarray((args.k_max + 1,))
         for ts in result["data"]:
             summed_data += np.asarray(result["data"][ts])
         averaged_data = summed_data / len(result["data"])
+        
+    if args.fit:
+        # Fit the averaged results with a fitting function
+        from scipy.optimize import curve_fit
+        def fitting_function(x, a, p, gamma, b):
+            return a * np.cos(2. * np.pi * x / p) * np.exp(x * gamma) + b
+        initial_guess = [ A_GUESS, args.p_guess, GAMMA_GUESS, B_GUESS ]
+        params, covariance = curve_fit(fitting_function,
+                                       list(range(args.k_max + 1 )), 
+                                       averaged_data, p0=initial_guess)
+            
+    # Plot the values, if requested, with
+    # the values averaged across the timesteps
+    if args.plot:
+        import matplotlib.pyplot as plt
         plt.plot(range(args.k_max + 1), averaged_data)
+        if args.fit:
+            # Create points for the fitting function. 
+            fitting_x = np.asarray(list(range(args.k_max 
+                                              * FIT_PLOT_DENSITY + 1)))
+            fitting_x = fitting_x / float(FIT_PLOT_DENSITY)
+            vectorized_fitting_function = np.vectorize(fitting_function,
+                                                       excluded = [1, 2, 3, 4])
+            fitting_y = vectorized_fitting_function(fitting_x, params[0],
+                                            params[1], params[2], params[3])
+            plt.plot(fitting_x, fitting_y,
+                     label = "p=%.2f" % params[1] 
+                     + "\ngamma=%.2f" % params[2]
+                     + "\nb=%.2f" % params[3])
         plt.xlabel('k', fontsize = 18)
         plt.ylabel('C(k)', fontsize = 18)
         plt.legend(shadow = False, fontsize = 18)
         plt.show()
+        
+    print(json.dumps(result, indent = 2))

@@ -9,7 +9,8 @@ NetworkX library is additionaly required to use the aggregates.py
 
 Quick reference:
 
-backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] INPUT [INPUT ...]
+usage: backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] [--plot] [--fit] [--p_guess [NUMBER]] INPUT [INPUT ...]
+
 
 Calculate the autocorrelation function of the polymer bonds.
 The formula is presented in https://doi.org/10.1134/S0965545X10070102
@@ -25,6 +26,9 @@ options:
   --selection [QUERY]   Consider only selected atoms, use MDAnalysis selection language
   --different-molecules
                         Calculate corrlations based on particle index number, even if the bonds belong to different molecules
+  --plot                Plot the averaged results
+  --fit                 Fit the averaged results with a modulated exponential function
+  --p_guess [NUMBER]    Initial guess for the number of monomer units per turn
                         
 
 
