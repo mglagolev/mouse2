@@ -139,7 +139,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "--different-molecules", action = "store_true",
-        help = "Calculate corrlations based on particle index number,\
+        help = "Calculate correlations based on particle index number,\
             even if the bonds belong to different molecules")
             
     parser.add_argument('--plot', action = "store_true",

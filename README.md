@@ -26,7 +26,7 @@ options:
   --k_max [k_max]       maximum distance between the bonds along the backbone
   --selection [QUERY]   Consider only selected atoms, use MDAnalysis selection language
   --different-molecules
-                        Calculate corrlations based on particle index number, even if the bonds belong to different molecules
+                        Calculate correlations based on particle index number, even if the bonds belong to different molecules
   --plot                Plot the averaged results
   --fit                 Fit the averaged results with a modulated exponential function
   --p_guess [NUMBER]    Initial guess for the number of monomer units per turn
