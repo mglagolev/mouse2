@@ -10,21 +10,21 @@ Matplotlib and SciPy are required to use the plotting and fitting options in som
 
 Quick installation:
 
-	**pip install mouse2**
+	pip install mouse2
 
 PyPI installation should add the following commands:
 
-	aggregates
+aggregates			-	determine the aggregates in the system based on inter-particle distances
+
+backbone_bond_autocorrelations	-	calculate the autocorrelation function of the backbone bonds of a polymer
 	
-	backbone_bond_autocorrelations	-	calculate the autocorrelation function of the backbone bonds of a polymer
+backbone_twist			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
 	
-	backbone_twist			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
+bond_orientational_ordering	- 	calculates the angles between the bonds, if their midpoints are located within specified distance range from each other
 	
-	bond_orientational_ordering	- 	calculates the angles between the bonds, if their midpoints are located within specified distance range from each other
-	
-	lamellar_ordering		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
-	
-	data2pdb			-	convert the LAMMPS data file to Protein Databank (pdb) format
+lamellar_ordering		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
+
+data2pdb			-	convert the LAMMPS data file to Protein Databank (pdb) format
 
 Quick reference:
 
