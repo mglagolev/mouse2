@@ -9,7 +9,8 @@ Created on Fri Oct 14 17:20:41 2022
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import numpy as np
-from lib.vector_orientational_ordering import calculate_cos_sq_for_reference
+from mouse2.lib.vector_orientational_ordering \
+    import calculate_cos_sq_for_reference
 import json
 
 def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):
@@ -195,7 +196,7 @@ def calculate_orientation_order_parameter(
         data[str(ts)] = values
     return { "description" : description, "data" : data }
 
-if __name__ == "__main__":
+def main():
     
     import argparse
 
@@ -275,3 +276,6 @@ if __name__ == "__main__":
         plt.ylabel('P(\u03B8), a.u.', fontsize = 18)
         plt.legend(shadow = False, fontsize = 18)
         plt.show()
+        
+if __name__ == "__main__":
+    main()

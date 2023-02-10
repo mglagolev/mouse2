@@ -1,5 +1,5 @@
 """
-mouse2
+mouse2.lib
 
 A toolkit for processing molecular dynamics simulation data
 with a focus on chiral ordering.

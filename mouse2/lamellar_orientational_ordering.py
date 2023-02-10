@@ -18,10 +18,11 @@
 import MDAnalysis as mda
 import argparse
 import json
-from lib.lamellar_orientation import lamellar_orientational_ordering_parameters
+from mouse2.lib.lamellar_orientation \ 
+    import lamellar_orientational_ordering_parameters
 
 
-if __name__ == "__main__":
+def main():
     
 
     parser = argparse.ArgumentParser(
@@ -72,3 +73,6 @@ if __name__ == "__main__":
                                              store_block_values = args.verbose
                                              )
     print(json.dumps(result, indent = 2))
+    
+if __name__ == "__main__":
+    main()

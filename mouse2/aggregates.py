@@ -10,11 +10,10 @@ Created on Thu Oct 20 23:34:30 2022
 
 import MDAnalysis as mda
 import json
-from lib.aggregation import determine_aggregates
+from mouse2.lib.aggregation import determine_aggregates
 
 
-
-if __name__ == "__main__":
+def main():
     
     import argparse
 
@@ -48,3 +47,6 @@ if __name__ == "__main__":
     result = determine_aggregates(u, args.r_neigh, args.selection)
     
     print(json.dumps(result, indent = 2))
+    
+if __name__ == "__main__":
+    main()

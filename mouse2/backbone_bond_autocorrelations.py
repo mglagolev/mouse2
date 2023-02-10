@@ -112,7 +112,7 @@ def calculate_bond_autocorrelations(u: mda.Universe, k_max,
         data[str(ts)] = ck
     return { "description" : description, "data" : data }
 
-if __name__ == "__main__":
+def main():
     
     import argparse
 
@@ -207,3 +207,6 @@ if __name__ == "__main__":
         plt.show()
         
     print(json.dumps(result, indent = 2))
+
+if __name__ == "__main__":
+    main()

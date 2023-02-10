@@ -10,7 +10,7 @@ import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import json
-from lib.utilities import normalize_vectors
+from mouse2.lib.utilities import normalize_vectors
 
 def backbone_twist(u: mda.Universe, k_list: list,
                    selection = None,
@@ -188,7 +188,7 @@ def backbone_twist(u: mda.Universe, k_list: list,
     return { "description" : "Dihedral angles along the polymer backbone",
              "data" : data}
 
-if __name__ == "__main__":
+def main():
     
     import argparse
 
@@ -249,3 +249,6 @@ if __name__ == "__main__":
         plt.ylabel('P(\u03A8), a.u.', fontsize = 18)
         plt.legend(shadow = False, fontsize = 18)
         plt.show()
+        
+if __name__ == "__main__":
+    main()
