@@ -8,6 +8,24 @@ The NumPy and MDAnalysis libraries need to be installed to use the scripts, and 
 NetworkX library is additionaly required to use the aggregates.py
 Matplotlib and SciPy are required to use the plotting and fitting options in some of the scripts.
 
+Quick installation:
+
+	**pip install mouse2**
+
+PyPI installation should add the following commands:
+
+	aggregates
+	
+	backbone_bond_autocorrelations	-	calculate the autocorrelation function of the backbone bonds of a polymer
+	
+	backbone_twist			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
+	
+	bond_orientational_ordering	- 	calculates the angles between the bonds, if their midpoints are located within specified distance range from each other
+	
+	lamellar_ordering		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
+	
+	data2pdb			-	convert the LAMMPS data file to Protein Databank (pdb) format
+
 Quick reference:
 
 usage: backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] [--plot] [--fit] [--p_guess [NUMBER]] INPUT [INPUT ...]
