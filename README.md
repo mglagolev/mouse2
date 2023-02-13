@@ -8,25 +8,27 @@ The NumPy and MDAnalysis libraries need to be installed to use the scripts, and 
 NetworkX library is additionaly required to use the aggregates.py.  
 Matplotlib and SciPy are required to use the plotting and fitting options in some of the scripts.
 
-Quick installation:
+#Quick installation:#
 
 	pip install mouse2
 
 PyPI installation should add the following commands:
 
-aggregates			-	determine the aggregates in the system based on inter-particle distances
+**aggregates**			-	determine the aggregates in the system based on inter-particle distances
 
-backbone_bond_autocorrelations	-	calculate the autocorrelation function of the backbone bonds of a polymer
+**backbone_bond_autocorrelations**	-	calculate the autocorrelation function of the backbone bonds of a polymer
 	
-backbone_twist			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
+**backbone_twist**			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
 	
-bond_orientational_ordering	- 	calculate the angles between the bonds, if their midpoints are located within specified distance range from each other
+**bond_orientational_ordering**	- 	calculate the angles between the bonds, if their midpoints are located within specified distance range from each other
 	
-lamellar_ordering		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
+**lamellar_ordering**		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
 
-data2pdb			-	convert the LAMMPS data file to Protein Databank (pdb) format
+**data2pdb**			-	convert the LAMMPS data file to Protein Databank (pdb) format
 
-Quick reference:
+#Quick reference:#
+
+***
 
 	backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] [--plot] [--fit] [--p_guess [NUMBER]] INPUT [INPUT ...]
 
@@ -37,6 +39,7 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 
 
 positional arguments:  
+
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
@@ -49,7 +52,7 @@ options:
 	--fit		Fit the averaged results with a modulated exponential function  
 	--p_guess [NUMBER]	Initial guess for the number of monomer units per turn  
                         
-
+***
 
 	bond_orientational_ordering.py [-h] [--r_max [R_max]] [--r_min [R_min]] [--same-molecule] [--histogram] [--n_bins [N_bins]] [--plot] INPUT [INPUT ...]
 
@@ -72,6 +75,7 @@ options:
   --n_bins [N_bins]  Number of bins of the distribution histogram  
   --plot             Plot the distribution histogram  
 
+***
 
 	lamellar_orientational_ordering.py [-h] [--block-types TYPES TYPES] [--A] [--B] [--verbose] INPUT [INPUT ...]
 
@@ -92,7 +96,7 @@ options:
 	--B                   Calculate the values for block B  
 	--verbose             Store the values for individual molecules
   
-
+***
 
 	backbone_twist.py [-h] [--selection [QUERY]] [--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]] [--different-molecules] [--plot] INPUT [INPUT ...]
 
@@ -115,7 +119,7 @@ options:
                         Consider the angles spanning different molecules
   --plot                Plot the results
   
-  
+***  
 
 	aggregates.py [-h] [--r_neigh [R_neigh]] [--selection [QUERY]] INPUT [INPUT ...]
 
@@ -132,7 +136,7 @@ options:
   --r_neigh [R_neigh]  neighbor cutoff
   --selection [QUERY]  Consider only selected atoms, use MDAnalysis selection language
 
-
+***
 
 The algorithms were used in the following publications:
 
