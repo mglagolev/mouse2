@@ -239,6 +239,11 @@ def main():
     parser.add_argument('--plot', action = "store_true",
                         help = "Plot the distribution histogram")
     
+    parser.add_argument('--pairs-file', type = str, nargs = '?',
+                        default = "",
+                        help = "CSV file with pairs of indices,"
+                        + " corresponding to vector ends")
+    
 
     args = parser.parse_args()
 
@@ -247,6 +252,16 @@ def main():
     mode = "average"
     if args.histogram:
         mode = "histogram"
+        
+    if len(args.pairs_file) > 0:
+        import csv
+        pairs = []
+        with open(args.pairs_file, newline = '') as pairs_file:
+            pairs_data = csv.reader(pairs_file, delimiter = ' ')
+            for pair in pairs_data:
+                pairs.append(pair)
+        u.delete_bonds(u.bonds)
+        u.add_bonds(pairs)
     
     result = calculate_orientation_order_parameter(u, r_min = args.r_min,
                                                    r_max = args.r_max,
