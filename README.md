@@ -38,6 +38,7 @@ Each aggregate is represented as a list of MDAnalysis atom indices.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
 
 ###### options: ###### 
 
@@ -66,6 +67,7 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
 
 ###### options: ###### 
 
@@ -75,7 +77,8 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 	--selection [QUERY]	
 			consider only selected atoms, use MDAnalysis selection language  
 	--different-molecules	
-			calculate correlations based on particle index number, even if the bonds belong to different molecules  
+			calculate correlations based on particle index number, 
+			even if the bonds belong to different molecules  
 	--plot		plot the averaged results  
 	--fit		fit the averaged results with a modulated exponential function  
 	--p_guess [NUMBER]	
@@ -89,8 +92,8 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 				INPUT [INPUT ...]
 
 Calculate the list of dihedral angles, formed by the following vectors:
-(r<sub>i</sub>, r<sub>{i+k}</sub>), (r<sub>{i+k}</sub>, r<sub>{i+2*k}</sub>), (r<sub>{i+2*k}</sub>, r<sub>{i+3*k}</sub>),
-where i is the index of a monomer unit.  
+(r<sub>*i*</sub>, r<sub>*i+k*</sub>), (r<sub>*i+k*</sub>, r<sub>*i+2k*</sub>), (r<sub>*i+2k*</sub>, r<sub>*i+3k*</sub>),
+where *i* is the index of a monomer unit.  
 The example of the analysis is provided in the Supplementary Information for
 https://doi.org/10.1016/j.polymer.2022.124974.
 
@@ -98,6 +101,7 @@ https://doi.org/10.1016/j.polymer.2022.124974.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
 
 ###### options: ###### 
 
@@ -129,6 +133,7 @@ and https://doi.org/10.1016/j.polymer.2022.124974.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
 
 ###### options: ###### 
 
@@ -159,6 +164,7 @@ A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
 
 ###### options: ###### 
 
@@ -190,7 +196,7 @@ This utility reads LAMMPS data file, and writes out the configuration in the PDB
 
 The algorithms were used in the following publications:
 
-Abramova A. A., Glagolev M. K., Vasilevskaya V. V. Structured globules with twisted arrangement of helical blocks: Computer simulation // Polymer. — 2022. — P. 124974.
+Abramova A. A., Glagolev M. K., Vasilevskaya V. V. Structured globules with twisted arrangement of helical blocks: Computer simulation // Polymer. — 2022. — Vol. 253. - P. 124974.
 
 Glagolev M. K., Glagoleva A. A., Vasilevskaya V. V. Microphase separation in helix-coil block copolymer melts: computer simulation // Soft Matter. — 2021. — Vol. 17, no. 36. — P. 8331–8342.
 
@@ -204,7 +210,7 @@ Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Induced liquid-crystalline or
 
 Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Effect of induced self-organization in mixtures of amphiphilic macromolecules with different stiffness // Macromolecules. — 2015. — Vol. 48, no. 11. — P. 3767–3774.
 
-Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Self-organization of amphiphilic macromolecules with local helix structure in concentrated solutions // Journal of Chemical Physics. — 2012. — Vol. 137, no. 8.
+Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Self-organization of amphiphilic macromolecules with local helix structure in concentrated solutions // Journal of Chemical Physics. — 2012. — Vol. 137, no. 8. - P. 084091.
 
 Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Formation of fibrillar aggregates in concentrated solutions of rigid-chain amphiphilic macromolecules with fixed torsion and bend angles // Polymer Science, Series A. — 2011. — Vol. 53, no. 8. — P. 733–743.
 
