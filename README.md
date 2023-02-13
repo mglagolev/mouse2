@@ -8,7 +8,7 @@ The NumPy and MDAnalysis libraries need to be installed to use the scripts, and 
 NetworkX library is additionaly required to use the aggregates.py.  
 Matplotlib and SciPy are required to use the plotting and fitting options in some of the scripts.
 
-#Quick installation:#
+## Quick installation: ##
 
 	pip install mouse2
 
@@ -26,9 +26,7 @@ PyPI installation should add the following commands:
 
 **data2pdb**			-	convert the LAMMPS data file to Protein Databank (pdb) format
 
-#Quick reference:#
-
-***
+## Quick reference: ##
 
 	backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] [--plot] [--fit] [--p_guess [NUMBER]] INPUT [INPUT ...]
 
@@ -44,13 +42,13 @@ positional arguments:
 
 options:  
 
-	-h, --help	Show this help message and exit  
-	--k_max [k_max]	Maximum distance between the bonds along the backbone  
-	--selection [QUERY]	Consider only selected atoms, use MDAnalysis selection language  
-	--different-molecules	Calculate correlations based on particle index number, even if the bonds belong to different molecules  
-	--plot		Plot the averaged results  
-	--fit		Fit the averaged results with a modulated exponential function  
-	--p_guess [NUMBER]	Initial guess for the number of monomer units per turn  
+	-h, --help		show this help message and exit  
+	--k_max [k_max]		maximum distance between the bonds along the backbone  
+	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language  
+	--different-molecules	calculate correlations based on particle index number, even if the bonds belong to different molecules  
+	--plot			plot the averaged results  
+	--fit			fit the averaged results with a modulated exponential function  
+	--p_guess [NUMBER]	initial guess for the number of monomer units per turn  
                         
 ***
 
@@ -64,16 +62,18 @@ and https://doi.org/10.1016/j.polymer.2022.124974.
 
 
 positional arguments:  
-  INPUT              input file(s), the format will be guessed by MDAnalysis based on file extension
+
+	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
-  -h, --help         show this help message and exit  
-  --r_max [R_max]    outer cutoff radius  
-  --r_min [R_min]    inner cutoff radius  
-  --same-molecule    Take into account bonds from the same molecule  
-  --histogram        Store and optionally plot the distribution of the angles  
-  --n_bins [N_bins]  Number of bins of the distribution histogram  
-  --plot             Plot the distribution histogram  
+
+	-h, --help         	show this help message and exit  
+	--r_max [R_max]    	outer cutoff radius  
+	--r_min [R_min]    	inner cutoff radius  
+	--same-molecule    	take into account bonds from the same molecule  
+	--histogram		store and optionally plot the distribution of the angles  
+	--n_bins [N_bins]  	number of bins of the distribution histogram  
+	--plot			plot the distribution histogram  
 
 ***
 
@@ -83,18 +83,21 @@ Calculate the molecular ordering parameters for lamellae containing tilted copol
 M. A. Osipov, M. V. Gorkunov, A. V. Berezkin, A. A. Antonov and Y. V. Kudryavtsev
 "Molecular theory of the tilting transition and computer simulations of the tilted lamellar phase of rod–coil diblock copolymers"
 https://doi.org/10.1063/5.0005854.  
-A use case is also presented in https://doi.org/10.1039/D1SM00759A
+A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 
 
 positional arguments:  
-	INPUT                 input file(s), the format will be guessed by MDAnalysis based on file extension
+
+	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
-	-h, --help            show this help message and exit  
-	--block-types TYPES TYPES bead types for the blocks A dnd B (provide 2 arguments, without the option default values 1 and 2 are used)  
-	--A                   Calculate the values for block A  
-	--B                   Calculate the values for block B  
-	--verbose             Store the values for individual molecules
+
+	-h, --help		show this help message and exit  
+	--block-types TYPES TYPES	
+				bead types for the blocks A and B (provide 2 arguments, without the option default values 1 and 2 are used)  
+	--A			calculate the values for block A  
+	--B			calculate the values for block B  
+	--verbose		store the values for individual molecules
   
 ***
 
@@ -108,16 +111,18 @@ https://doi.org/10.1016/j.polymer.2022.124974.
 
 
 positional arguments:  
-  INPUT                 input file(s), the format will be guessed by MDAnalysis based on file extension
+
+	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
-  -h, --help            show this help message and exit
-  --selection [QUERY]   Consider only selected atoms, use MDAnalysis selection language
-  --k VECTOR_LENGTHS [VECTOR_LENGTHS ...]
-                        List of vector lengths along the backbone
-  --different-molecules
-                        Consider the angles spanning different molecules
-  --plot                Plot the results
+
+	-h, --help		show this help message and exit
+	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language
+	--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]
+				list of vector lengths along the backbone
+	--different-molecules
+				consider the angles spanning different molecules
+	--plot			plot the results
   
 ***  
 
@@ -129,12 +134,14 @@ The atoms are considered neighbors if the distance between their centers does no
 Each aggregate is represented as a list of MDAnalysis atom indices.
 
 positional arguments:  
-  INPUT                input file(s), the format will be guessed by MDAnalysis based on file extension
+
+	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
-  -h, --help           show this help message and exit
-  --r_neigh [R_neigh]  neighbor cutoff
-  --selection [QUERY]  Consider only selected atoms, use MDAnalysis selection language
+
+	-h, --help		show this help message and exit  
+	--r_neigh [R_neigh]	neighbor cutoff  
+	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language  
 
 ***
 
