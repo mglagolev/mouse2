@@ -40,6 +40,7 @@ positional arguments:
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
+
 	-h, --help	Show this help message and exit  
 	--k_max [k_max]	Maximum distance between the bonds along the backbone  
 	--selection [QUERY]	Consider only selected atoms, use MDAnalysis selection language  
