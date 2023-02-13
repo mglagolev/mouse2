@@ -63,11 +63,11 @@ The formula is presented in https://doi.org/10.1134/S0965545X10070102.
 Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 
 
-positional arguments:  
+#### positional arguments: #### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-options:  
+#### options: #### 
 
 	-h, --help	show this help message and exit  
 	--k_max [k_max]	
@@ -83,20 +83,23 @@ options:
                         
 ***
 
-	backbone_twist.py [-h] [--selection [QUERY]] [--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]] [--different-molecules] [--plot] INPUT [INPUT ...]
+	backbone_twist.py [-h] [--selection [QUERY]] 
+				[--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]] 
+				[--different-molecules] [--plot] 
+				INPUT [INPUT ...]
 
 Calculate the list of dihedral angles, formed by the following vectors:
-(r_i, r_{i+k}), (r_{i+k}, r_{i+2*k}), (r_{i+2*k}, r_{i+3*k})
+(r<sub>i</sub>, r<sub>{i+k}</sub>), (r<sub>{i+k}</sub>, r<sub>{i+2*k}</sub>), (r<sub>{i+2*k}</sub>, r<sub>{i+3*k}</sub>),
 where i is the index of a monomer unit.  
 The example of the analysis is provided in the Supplementary Information for
 https://doi.org/10.1016/j.polymer.2022.124974.
 
 
-positional arguments:  
+#### positional arguments: #### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-options:  
+#### options: #### 
 
 	-h, --help	show this help message and exit
 	--selection [QUERY]	
@@ -117,17 +120,17 @@ options:
 					INPUT [INPUT ...]
 
 This utility calculates the angles between the bonds, if their midpoints are located within the range of [r<sub>min</sub>, r<sub>max</sub>].  
-The local ordering parameter is then calculated as S = 3/2 ( <(cos(gamma))<sup>2</sup>>) -1/2),
+The local ordering parameter is then calculated as S = 3/2<(cos<sup>2</sup>(gamma)> - 1/2,
 where "gamma" is the angle between the bond vectors. The distributions are stored if the --histogram flag is provided.  
 The example applications are https://doi.org/10.1016/j.polymer.2020.122232
 and https://doi.org/10.1016/j.polymer.2022.124974.
 
 
-positional arguments:  
+#### positional arguments: #### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-options:  
+#### options: #### 
 
 	-h, --help	show this help message and exit  
 	--r_max [R_max]	outer cutoff radius  
@@ -153,19 +156,36 @@ https://doi.org/10.1063/5.0005854.
 A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 
 
-positional arguments:  
+#### positional arguments: #### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-options:  
+#### options: #### 
 
 	-h, --help	show this help message and exit  
 	--block-types TYPES TYPES	
-			bead types for the blocks A and B (provide 2 arguments, without the option default values 1 and 2 are used)  
+			bead types for the blocks A and B 
+			(provide 2 arguments, without the option default values 1 and 2 are used)  
 	--A		calculate the values for block A  
 	--B		calculate the values for block B  
 	--verbose	store the values for individual molecules
   
+***
+
+	data2pdb.py [-h] INPUT [INPUT ...] OUTPUT [OUTPUT ...] [--no-pbc-bonds]
+	
+This utility reads LAMMPS data file, and writes out the configuration in the PDB format.
+
+#### positional arguments: #### 
+
+	INPUT		input LAMMPS data file (should have .data extension)
+	OUTPUT		output PDB file
+
+#### options: #### 
+
+	--no-pbc-bonds	hide the bonds which are not between the nearest images
+    			of the particles, used for visualisation
+    
 ***
 
 The algorithms were used in the following publications:
@@ -176,7 +196,7 @@ Glagolev M. K., Glagoleva A. A., Vasilevskaya V. V. Microphase separation in hel
 
 Glagolev M. K., Vasilevskaya V. V. Coarse-grained simulation of molecular ordering in polylactic blends under uniaxial strain // Polymer. — 2020. — Vol. 190. — P. 122232.
 
-Glagolev M. K., Vasilevskaya V. V. Liquid-crystalline ordering of filaments formed by bidisperse amphiphilic macromolecules // Polymer Science - Series C. — 2018. — Vol. 60, no. 1. — P. 39–47.
+Glagolev M. K., Vasilevskaya V. V. Liquid-crystalline ordering of filaments formed by bidisperse amphiphilic macromolecules // Polymer Science, Series C. — 2018. — Vol. 60, no. 1. — P. 39–47.
 
 Glagolev M. K., Vasilevskaya V. V., Khokhlov A. R. Domains in mixtures of amphiphilic macromolecules with different stiffness of backbone // Polymer. — 2017. — Vol. 125. — P. 234–240.
 
