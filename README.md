@@ -35,11 +35,11 @@ Each aggregate is determined as a complete graph of neighbors.
 The atoms are considered neighbors if the distance between their centers does not exceed r_neigh.  
 Each aggregate is represented as a list of MDAnalysis atom indices.
 
-positional arguments:  
+###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-options:  
+###### options: ###### 
 
 	-h, --help	show this help message and exit  
 	--r_neigh [R_neigh]	
@@ -63,11 +63,11 @@ The formula is presented in https://doi.org/10.1134/S0965545X10070102.
 Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 
 
-#### positional arguments: #### 
+###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-#### options: #### 
+###### options: ###### 
 
 	-h, --help	show this help message and exit  
 	--k_max [k_max]	
@@ -95,11 +95,11 @@ The example of the analysis is provided in the Supplementary Information for
 https://doi.org/10.1016/j.polymer.2022.124974.
 
 
-#### positional arguments: #### 
+###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-#### options: #### 
+###### options: ###### 
 
 	-h, --help	show this help message and exit
 	--selection [QUERY]	
@@ -126,11 +126,11 @@ The example applications are https://doi.org/10.1016/j.polymer.2020.122232
 and https://doi.org/10.1016/j.polymer.2022.124974.
 
 
-#### positional arguments: #### 
+###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-#### options: #### 
+###### options: ###### 
 
 	-h, --help	show this help message and exit  
 	--r_max [R_max]	outer cutoff radius  
@@ -156,11 +156,11 @@ https://doi.org/10.1063/5.0005854.
 A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 
 
-#### positional arguments: #### 
+###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
-#### options: #### 
+###### options: ###### 
 
 	-h, --help	show this help message and exit  
 	--block-types TYPES TYPES	
@@ -176,12 +176,12 @@ A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 	
 This utility reads LAMMPS data file, and writes out the configuration in the PDB format.
 
-#### positional arguments: #### 
+###### positional arguments: ###### 
 
 	INPUT		input LAMMPS data file (should have .data extension)
 	OUTPUT		output PDB file
 
-#### options: #### 
+###### options: ###### 
 
 	--no-pbc-bonds	hide the bonds which are not between the nearest images
     			of the particles, used for visualisation
