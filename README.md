@@ -28,7 +28,34 @@ PyPI installation should add the following commands:
 
 ## Quick reference: ##
 
-	backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] [--selection [QUERY]] [--different-molecules] [--plot] [--fit] [--p_guess [NUMBER]] INPUT [INPUT ...]
+	aggregates.py [-h] [--r_neigh [R_neigh]] [--selection [QUERY]] INPUT [INPUT ...]
+
+This utility returns a data structure containing list of aggregates for all of the timesteps in the MDAnalysis universe.  
+Each aggregate is determined as a complete graph of neighbors.  
+The atoms are considered neighbors if the distance between their centers does not exceed r_neigh.  
+Each aggregate is represented as a list of MDAnalysis atom indices.
+
+positional arguments:  
+
+	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+
+options:  
+
+	-h, --help	show this help message and exit  
+	--r_neigh [R_neigh]	
+			neighbor cutoff  
+	--selection [QUERY]
+			consider only selected atoms, use MDAnalysis selection language  
+
+***
+
+	backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] 
+					[--selection [QUERY]] 
+					[--different-molecules] 
+					[--plot] 
+					[--fit] 
+					[--p_guess [NUMBER]] 
+					INPUT [INPUT ...]
 
 
 Calculate the autocorrelation function of the polymer bonds.  
@@ -42,63 +69,18 @@ positional arguments:
 
 options:  
 
-	-h, --help		show this help message and exit  
-	--k_max [k_max]		maximum distance between the bonds along the backbone  
-	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language  
-	--different-molecules	calculate correlations based on particle index number, even if the bonds belong to different molecules  
-	--plot			plot the averaged results  
-	--fit			fit the averaged results with a modulated exponential function  
-	--p_guess [NUMBER]	initial guess for the number of monomer units per turn  
+	-h, --help	show this help message and exit  
+	--k_max [k_max]	
+			maximum distance between the bonds along the backbone  
+	--selection [QUERY]	
+			consider only selected atoms, use MDAnalysis selection language  
+	--different-molecules	
+			calculate correlations based on particle index number, even if the bonds belong to different molecules  
+	--plot		plot the averaged results  
+	--fit		fit the averaged results with a modulated exponential function  
+	--p_guess [NUMBER]	
+			initial guess for the number of monomer units per turn  
                         
-***
-
-	bond_orientational_ordering.py [-h] [--r_max [R_max]] [--r_min [R_min]] [--same-molecule] [--histogram] [--n_bins [N_bins]] [--plot] INPUT [INPUT ...]
-
-This utility calculates the angles between the bonds, if their midpoints are located within the range of [rmin, rmax].  
-The local ordering parameter is then calculated as S = 3/2 ( <(cos(gamma))^2>) -1/2)
-where "gamma" is the angle between the bond vectors. The distributions are stored if the --histogram flag is provided.  
-The example applications are https://doi.org/10.1016/j.polymer.2020.122232
-and https://doi.org/10.1016/j.polymer.2022.124974.
-
-
-positional arguments:  
-
-	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
-
-options:  
-
-	-h, --help         	show this help message and exit  
-	--r_max [R_max]    	outer cutoff radius  
-	--r_min [R_min]    	inner cutoff radius  
-	--same-molecule    	take into account bonds from the same molecule  
-	--histogram		store and optionally plot the distribution of the angles  
-	--n_bins [N_bins]  	number of bins of the distribution histogram  
-	--plot			plot the distribution histogram  
-
-***
-
-	lamellar_orientational_ordering.py [-h] [--block-types TYPES TYPES] [--A] [--B] [--verbose] INPUT [INPUT ...]
-
-Calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks, as described in the paper by 
-M. A. Osipov, M. V. Gorkunov, A. V. Berezkin, A. A. Antonov and Y. V. Kudryavtsev
-"Molecular theory of the tilting transition and computer simulations of the tilted lamellar phase of rod–coil diblock copolymers"
-https://doi.org/10.1063/5.0005854.  
-A use case is also presented in https://doi.org/10.1039/D1SM00759A.
-
-
-positional arguments:  
-
-	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
-
-options:  
-
-	-h, --help		show this help message and exit  
-	--block-types TYPES TYPES	
-				bead types for the blocks A and B (provide 2 arguments, without the option default values 1 and 2 are used)  
-	--A			calculate the values for block A  
-	--B			calculate the values for block B  
-	--verbose		store the values for individual molecules
-  
 ***
 
 	backbone_twist.py [-h] [--selection [QUERY]] [--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]] [--different-molecules] [--plot] INPUT [INPUT ...]
@@ -112,37 +94,78 @@ https://doi.org/10.1016/j.polymer.2022.124974.
 
 positional arguments:  
 
-	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
+	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
 
-	-h, --help		show this help message and exit
-	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language
+	-h, --help	show this help message and exit
+	--selection [QUERY]	
+			consider only selected atoms, use MDAnalysis selection language
 	--k VECTOR_LENGTHS [VECTOR_LENGTHS ...]
-				list of vector lengths along the backbone
+			list of vector lengths along the backbone
 	--different-molecules
-				consider the angles spanning different molecules
-	--plot			plot the results
+			consider the angles spanning different molecules
+	--plot		plot the results
   
 ***  
 
-	aggregates.py [-h] [--r_neigh [R_neigh]] [--selection [QUERY]] INPUT [INPUT ...]
+	bond_orientational_ordering.py [-h] [--r_max [R_max]] [--r_min [R_min]] 
+					[--same-molecule] 
+					[--histogram] 
+					[--n_bins [N_bins]] 
+					[--plot] 
+					INPUT [INPUT ...]
 
-This utility returns a data structure containing list of aggregates for all of the timesteps in the MDAnalysis universe.  
-Each aggregate is determined as a complete graph of neighbors.  
-The atoms are considered neighbors if the distance between their centers does not exceed r_neigh.  
-Each aggregate is represented as a list of MDAnalysis atom indices.
+This utility calculates the angles between the bonds, if their midpoints are located within the range of [r<sub>min</sub>, r<sub>max</sub>].  
+The local ordering parameter is then calculated as S = 3/2 ( <(cos(gamma))<sup>2</sup>>) -1/2),
+where "gamma" is the angle between the bond vectors. The distributions are stored if the --histogram flag is provided.  
+The example applications are https://doi.org/10.1016/j.polymer.2020.122232
+and https://doi.org/10.1016/j.polymer.2022.124974.
+
 
 positional arguments:  
 
-	INPUT			input file(s), the format will be guessed by MDAnalysis based on file extension
+	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
 
 options:  
 
-	-h, --help		show this help message and exit  
-	--r_neigh [R_neigh]	neighbor cutoff  
-	--selection [QUERY]	consider only selected atoms, use MDAnalysis selection language  
+	-h, --help	show this help message and exit  
+	--r_max [R_max]	outer cutoff radius  
+	--r_min [R_min]	inner cutoff radius  
+	--same-molecule	take into account bonds from the same molecule  
+	--histogram	store and optionally plot the distribution of the angles  
+	--n_bins [N_bins]  	
+			number of bins of the distribution histogram  
+	--plot			
+			plot the distribution histogram  
 
+***
+
+	lamellar_orientational_ordering.py [-h] [--block-types TYPES TYPES] 
+						[--A] [--B] 
+						[--verbose] 
+						INPUT [INPUT ...]
+
+Calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks, as described in the paper by 
+M. A. Osipov, M. V. Gorkunov, A. V. Berezkin, A. A. Antonov and Y. V. Kudryavtsev
+"Molecular theory of the tilting transition and computer simulations of the tilted lamellar phase of rod–coil diblock copolymers"
+https://doi.org/10.1063/5.0005854.  
+A use case is also presented in https://doi.org/10.1039/D1SM00759A.
+
+
+positional arguments:  
+
+	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
+
+options:  
+
+	-h, --help	show this help message and exit  
+	--block-types TYPES TYPES	
+			bead types for the blocks A and B (provide 2 arguments, without the option default values 1 and 2 are used)  
+	--A		calculate the values for block A  
+	--B		calculate the values for block B  
+	--verbose	store the values for individual molecules
+  
 ***
 
 The algorithms were used in the following publications:
