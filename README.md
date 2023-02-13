@@ -38,7 +38,8 @@ Each aggregate is represented as a list of MDAnalysis atom indices.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
-			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
+
+For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1
 
 ###### options: ###### 
 
@@ -67,7 +68,8 @@ Application to all-atom simulations: https://doi.org/10.3390/polym11122056.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
-			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
+
+For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1
 
 ###### options: ###### 
 
@@ -101,7 +103,8 @@ https://doi.org/10.1016/j.polymer.2022.124974.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
-			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
+			
+For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1
 
 ###### options: ###### 
 
@@ -133,7 +136,8 @@ and https://doi.org/10.1016/j.polymer.2022.124974.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
-			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
+			
+For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1
 
 ###### options: ###### 
 
@@ -164,7 +168,8 @@ A use case is also presented in https://doi.org/10.1039/D1SM00759A.
 ###### positional arguments: ###### 
 
 	INPUT		input file(s), the format will be guessed by MDAnalysis based on file extension
-			(see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1)
+
+For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.0/formats/index.html#id1
 
 ###### options: ###### 
 
