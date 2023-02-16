@@ -77,7 +77,7 @@ def calculate_cos_sq_for_reference(
     
     # Create an array masking the values that shall be excluded
     if excluded_attributes is not None:
-        excluded = np.equal(vector_attributes, excluded_attributes)
+        excluded = np.isin(vector_attributes, excluded_attributes)
     else:
         excluded = np.zeros(vector_components[0].size)
     

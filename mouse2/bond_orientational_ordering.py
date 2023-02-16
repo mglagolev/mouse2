@@ -31,8 +31,9 @@ def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):
     
 
 def calculate_orientation_order_parameter(
-        u: mda.Universe, r_min = 0., r_max = -1., n_bins = 150,
-        mode = 'average', same_molecule = True):
+        u: mda.Universe, r_min = 0., r_max = -1., 
+        id_pairs = None, selection = None,
+        n_bins = 150, mode = 'average', same_molecule = True):
     """
     
     This function calculates the angles between the bonds, if their
@@ -97,6 +98,24 @@ def calculate_orientation_order_parameter(
     unwrap = transformations.unwrap(u.atoms)
     u.trajectory.add_transformations(unwrap)
     
+    # Select atoms by type or read selection criteria in MDAnalysis synthax
+    if selection is not None:
+        selected_atoms = u.select_atoms(selection)
+    else:
+        selected_atoms = u.atoms
+    
+    #Select the atoms
+    if id_pairs is not None:
+        # To generate sorted selections, we have to add the atoms one by one:
+        atoms1 = mda.AtomGroup([],u)
+        atoms2 = mda.AtomGroup([],u)
+        for i in range(len(id_pairs)):
+            atoms1 += selected_atoms.select_atoms("id " + str(id_pairs[i][0]))
+            atoms2 += selected_atoms.select_atoms("id " + str(id_pairs[i][1]))
+    else:
+        atoms1 = selected_atoms.bonds.atom1
+        atoms2 = selected_atoms.bonds.atom2
+    
     data = {}
     
     for ts in u.trajectory:
@@ -119,40 +138,41 @@ def calculate_orientation_order_parameter(
         if r_max == 0.:
             r_max = min(u.dimensions) / 2.
     
-        # Calculate bond components
+        # Calculate vector components
         # 1D arrays, one for each of the coordinates, provide more efficient
         # numpy calculations. Converting the data here, outside of the main
         # loop provided additional 15% speedup in the test runs.
-        bx = (u.bonds.atom2.positions[:, 0] - u.bonds.atom1.positions[:, 0])
-        by = (u.bonds.atom2.positions[:, 1] - u.bonds.atom1.positions[:, 1])
-        bz = (u.bonds.atom2.positions[:, 2] - u.bonds.atom1.positions[:, 2])
+        bx = (atoms2.positions[:, 0] - atoms1.positions[:, 0])
+        by = (atoms2.positions[:, 1] - atoms1.positions[:, 1])
+        bz = (atoms2.positions[:, 2] - atoms1.positions[:, 2])
     
         bond_components = [bx, by, bz]
     
         # Creating 1D arrays with bond midpoints
-        rx = (u.bonds.atom1.positions[:, 0] 
-              + u.bonds.atom2.positions[:, 0]) / 2.
-        ry = (u.bonds.atom1.positions[:, 1]
-              + u.bonds.atom2.positions[:, 1]) / 2.
-        rz = (u.bonds.atom1.positions[:, 2]
-              + u.bonds.atom2.positions[:, 2]) / 2.
+        rx = (atoms1.positions[:, 0] 
+              + atoms2.positions[:, 0]) / 2.
+        ry = (atoms1.positions[:, 1]
+              + atoms2.positions[:, 1]) / 2.
+        rz = (atoms1.positions[:, 2]
+              + atoms2.positions[:, 2]) / 2.
     
         bond_midpoints = [rx, ry, rz]
     
         if not same_molecule:
-            bond_resids = u.bonds.atom1.resids
+            bond_resids = atoms1.resids
         else:
             bond_resids = None
     
-        for bond in u.bonds:
+        for ivector in range(len(atoms1)):
             # Determine the reference vector components and midpoint
-            # from the bond coordinates
-            ref_components = bond.atoms[1].position - bond.atoms[0].position
-            ref_midpoint = (bond.atoms[0].position
-                            + bond.atoms[1].position) / 2.
+            # from the atom coordinates
+            ref_components = atoms2[ivector].position - atoms1[ivector].position
+            ref_midpoint = (atoms1[ivector].position 
+                            + atoms2[ivector].position) / 2.
             # If needed, exclude bonds from the same molecule
             if not same_molecule:
-                excluded_resids = bond.atoms[0].resid
+                excluded_resids = list(set([atoms1[ivector].resid,
+                                       atoms2[ivector].resid]))
             else:
                 excluded_resids = None
             # Calculate ordering parameter value for the reference bond
@@ -223,6 +243,11 @@ def main():
     parser.add_argument(
         '--r_min', metavar = 'R_min', type = float, nargs = '?',
         default = 0., help = "inner cutoff radius")
+        
+    parser.add_argument(
+        '--selection', metavar = 'QUERY', type = str, nargs = '?',
+        help 
+        = "Consider only selected atoms, use MDAnalysis selection language")
     
     parser.add_argument(
         "--same-molecule", action = "store_true",
@@ -260,13 +285,14 @@ def main():
             pairs_data = csv.reader(pairs_file, delimiter = ' ')
             for pair in pairs_data:
                 pairs.append(pair)
-        u.delete_bonds(u.bonds)
-        u.add_bonds(pairs)
+    else:
+        pairs = None
     
     result = calculate_orientation_order_parameter(u, r_min = args.r_min,
                                                    r_max = args.r_max,
                                                    mode = mode,
                                                    n_bins = args.n_bins,
+                                                   id_pairs = pairs,
                                                    same_molecule
                                                    = args.same_molecule,
                                                   )
