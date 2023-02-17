@@ -18,7 +18,7 @@ B_GUESS = 0.
 
 FIT_PLOT_DENSITY = 10 # Must be integer
 
-def calculate_bond_autocorrelations(u: mda.Universe, k_max,
+def bond_autocorrelations(u: mda.Universe, k_max,
                                     selection = None,
                                     different_molecules: bool = False):
     """
@@ -159,10 +159,10 @@ def main():
 
     u = mda.Universe(*args.input)
     
-    result = calculate_bond_autocorrelations(u, k_max = args.k_max,
-                                                selection = args.selection,
-                                                different_molecules =
-                                                args.different_molecules)
+    result = bond_autocorrelations(u, k_max = args.k_max,
+                                   selection = args.selection,
+                                   different_molecules = 
+                                   args.different_molecules)
 
     
     if args.plot or args.fit:
