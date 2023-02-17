@@ -30,7 +30,7 @@ def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):
     return frequencies, bincenters
     
 
-def calculate_orientation_order_parameter(
+def local_alignment(
         u: mda.Universe, r_min = 0., r_max = -1., 
         id_pairs = None, selection = None,
         n_bins = 150, mode = 'average', same_molecule = True):
@@ -288,14 +288,11 @@ def main():
     else:
         pairs = None
     
-    result = calculate_orientation_order_parameter(u, r_min = args.r_min,
-                                                   r_max = args.r_max,
-                                                   mode = mode,
-                                                   n_bins = args.n_bins,
-                                                   id_pairs = pairs,
-                                                   same_molecule
-                                                   = args.same_molecule,
-                                                  )
+    result = local_alignment(u, r_min = args.r_min, r_max = args.r_max,
+                             mode = mode, n_bins = args.n_bins,
+                             id_pairs = pairs, same_molecule
+                             = args.same_molecule,
+                             )
 
     print(json.dumps(result, indent = 2))
     
