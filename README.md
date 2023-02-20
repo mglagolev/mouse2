@@ -16,13 +16,13 @@ PyPI installation should add the following commands:
 
 **aggregates**			-	determine the aggregates in the system based on inter-particle distances
 
-**backbone_bond_autocorrelations**	-	calculate the autocorrelation function of the backbone bonds of a polymer
+**bond_autocorrelations**	-	calculate the autocorrelation function of the backbone bonds of a polymer
 	
 **backbone_twist**			-	calculate the list of dihedral angles formed by the segments of polymer backbone	
 	
-**bond_orientational_ordering**	- 	calculate the angles between the bonds, if their midpoints are located within specified distance range from each other
+**local_alignment**	- 	calculate the angles between the bonds, if their midpoints are located within specified distance range from each other
 	
-**lamellar_ordering**		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
+**lamellar_alignment**		-	calculate the molecular ordering parameters for lamellae containing tilted copolymer blocks
 
 **data2pdb**			-	convert the LAMMPS data file to Protein Databank (pdb) format
 
@@ -51,7 +51,7 @@ For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.
 
 ***
 
-	backbone_bond_autocorrelations.py [-h] [--k_max [k_max]] 
+	bond_autocorrelations.py [-h] [--k_max [k_max]] 
 					[--selection [QUERY]] 
 					[--different-molecules] 
 					[--plot] 
@@ -119,11 +119,13 @@ For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.
   
 ***  
 
-	bond_orientational_ordering.py [-h] [--r_max [R_max]] [--r_min [R_min]] 
+	local_alignment.py [-h] [--r_max [R_max]] [--r_min [R_min]] 
+					[--selection [QUERY]]
 					[--same-molecule] 
 					[--histogram] 
 					[--n_bins [N_bins]] 
 					[--plot] 
+					[--pairs-file [PAIRS_FILE]]
 					INPUT [INPUT ...]
 
 This utility calculates the angles between the bonds, if their midpoints are located within the range of [r<sub>min</sub>, r<sub>max</sub>].  
@@ -144,16 +146,20 @@ For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.
 	-h, --help	show this help message and exit  
 	--r_max [R_max]	outer cutoff radius  
 	--r_min [R_min]	inner cutoff radius  
+	--selection [QUERY]  
+			consider only selected atoms, use MDAnalysis selection language
 	--same-molecule	take into account bonds from the same molecule  
 	--histogram	store and optionally plot the distribution of the angles  
 	--n_bins [N_bins]  	
 			number of bins of the distribution histogram  
 	--plot			
-			plot the distribution histogram  
+			plot the distribution histogram 
+	--pairs-file [PAIRS_FILE]  
+                        CSV file with pairs of indices, corresponding to vector ends 
 
 ***
 
-	lamellar_orientational_ordering.py [-h] [--block-types TYPES TYPES] 
+	lamellar_alignment.py [-h] [--block-types TYPES TYPES] 
 						[--A] [--B] 
 						[--verbose] 
 						INPUT [INPUT ...]
@@ -183,14 +189,14 @@ For the formats overview in MDAnalysis see https://userguide.mdanalysis.org/1.0.
   
 ***
 
-	data2pdb.py [-h] INPUT [INPUT ...] OUTPUT [OUTPUT ...] [--no-pbc-bonds]
+	data2pdb.py [-h] [--hide-pbc-bonds] LAMMPS_DATA PDB
 	
 This utility reads LAMMPS data file, and writes out the configuration in the PDB format.
 
 ###### positional arguments: ###### 
 
-	INPUT		input LAMMPS data file (should have .data extension)
-	OUTPUT		output PDB file
+	LAMMPS_DATA	input
+	PDB		output
 
 ###### options: ###### 
 
