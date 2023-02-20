@@ -11,6 +11,7 @@ import MDAnalysis as mda
 import os
 from mouse2.bond_autocorrelations import bond_autocorrelations
 from mouse2.local_alignment import local_alignment
+from mouse2.lamellar_alignment import lamellar_alignment
 import numpy as np
 import csv
 
@@ -131,25 +132,25 @@ local_alignment_tgt = {
         {
             "test_file" : "disordered_rods.pdb",
             "r_min" : 1e-6,
-            "r_max" : 10.,
+            "r_max" : 3.,
             "mode" : "average",
             "n_bins" : 0,
             "selection" : None,
             "same_molecule" : False,
             "id_pairs" : None,
-            "data" : { 'average_s' : 0.045459698063566534 }
+            "data" : { 'average_s' : -0.0035014018032770156 }
         },
     "disordered_rods_same_mol_included" :
         {
             "test_file" : "disordered_rods.pdb",
             "r_min" : 1e-6,
-            "r_max" : 10.,
+            "r_max" : 3.,
             "mode" : "average",
             "n_bins" : 0,
             "selection" : None,
-            "same_molecule" : False,
+            "same_molecule" : True,
             "id_pairs" : None,
-            "data" : {'average_s': 0.002875285236753178 }
+            "data" : {'average_s': 0.4284608779711845 }
         },
     "ordered_rods_same_mol_included" :
         {
@@ -292,6 +293,41 @@ local_alignment_tgt = {
         
     }
     
+lamellar_alignment_tgt = {
+    "helical_lamellae" : 
+        {
+            "test_file" : "helical_lamellae.data.gz",
+            "block_A" : '1',
+            "block_B" : '2',
+            "data" : {
+                'ave_sk_A': 0.1349393761206555,
+                'ave_sk_B': 0.9484335614978827,
+                'director_A': [0.6729965806007385, 
+                               0.6719508767127991,
+                               -0.3091239333152771],
+                'director_B': [-0.6683759689331055,
+                               -0.6591828465461731,
+                               0.34460344910621643],
+                'h_A': [-0.018200051739855783,
+                        0.017282652905286855,
+                        -0.0020557412337298686],
+                'h_B': [-0.00963448950701054,
+                        0.007984968781438562,
+                        -0.003412347762458301],
+                'lam_norm': [0.6688220343349828,
+                             0.6647282081332,
+                             -0.3328866108752948],
+                'pk_A': -0.0047359446982262994,
+                'pk_B': -0.0013177566213366798,
+                'theta_A': 0.025185892617338553,
+                'theta_B': -0.012970832512079157,
+                'v_A': 0.006922271924339574,
+                'v_B': -0.024626562710843236,
+                }
+            }
+        }
+    
+    
 def dict_max_discrepancy(dict1, dict2):
     discrepancy = 0.
     for key1 in dict1:
@@ -312,7 +348,7 @@ class TestAutocorrelations(unittest.TestCase):
         result = bond_autocorrelations(u, k_max,
                                     different_molecules = different_molecules,
                                     selection = selection)
-        data = np.asarray(list(result["data"].values())[0])
+        data = list(result["data"].values())[0]
         discrepancy = dict_max_discrepancy(data, target_data)
         assert discrepancy <= tolerance
         
@@ -347,7 +383,7 @@ class TestLocalAlignment(unittest.TestCase):
                                  id_pairs = id_pairs,
                                  selection = selection,
                                  same_molecule = same_molecule)
-        data = np.asarray(list(result["data"].values())[0])
+        data = list(result["data"].values())[0]
         discrepancy = dict_max_discrepancy(data, target_data)
         assert discrepancy <= tolerance
         
@@ -370,7 +406,23 @@ class TestLocalAlignment(unittest.TestCase):
     def test_lamellae_flexible_from_list(self):
         self.check_local_alignment(
                                 local_alignment_tgt["lamellae_flexible_lists"])
+        
+class TestLamellarAlignment(unittest.TestCase):
     
+    def check_lamellar_alignment(self, target):
+        test_file = target["test_file"]
+        block_A = target["block_A"]
+        block_B = target["block_B"]
+        target_data = target["data"]
+        u = mda.Universe(test_file)
+        result = lamellar_alignment(u, block_A, block_B)
+        data = list(result["data"].values())[0]
+        discrepancy = dict_max_discrepancy(data, target_data)
+        assert discrepancy <= tolerance
+    
+    def test_helical_lamellae(self):
+        self.check_lamellar_alignment(
+                            lamellar_alignment_tgt["helical_lamellae"])
 
         
 if __name__ == "__main__":
