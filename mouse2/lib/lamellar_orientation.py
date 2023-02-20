@@ -65,11 +65,9 @@ def pk_v_theta(vectors, reference_2, reference_3, average_sk):
     return average_pk, average_v, theta
 
 
-def lamellar_orientational_ordering_parameters(u: mda.Universe, 
-                                               type_A, type_B,
-                                               store_A_values = True,
-                                               store_B_values = True,
-                                               store_block_values = False):
+def lamellar_alignment(u: mda.Universe, type_A, type_B,
+                       store_A_values = True, store_B_values = True,
+                       store_block_values = False):
     """
     Calculate the molecular orientational ordering parameters 
     for lamellae containing tilted copolymer blocks, as described in the
@@ -78,10 +76,10 @@ def lamellar_orientational_ordering_parameters(u: mda.Universe,
     Parameters
     ----------
     u : mda.Universe
-        DESCRIPTION.
-    type_A : int
+        Input data for analysis as MDAnalysis Universe.
+    type_A : str
         Bead type for block A beads in the Universe.
-    type_B : int
+    type_B : str
         Bead type for block A beads in the Universe.
     store_A_values : bool, optional
         Calculate and store the values for A blocks. The default is True.

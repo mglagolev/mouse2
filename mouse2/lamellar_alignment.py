@@ -18,8 +18,7 @@
 import MDAnalysis as mda
 import argparse
 import json
-from mouse2.lib.lamellar_orientation \
-    import lamellar_orientational_ordering_parameters
+from mouse2.lib.lamellar_orientation import lamellar_alignment
 
 
 def main():
