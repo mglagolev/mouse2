@@ -11,7 +11,8 @@ import MDAnalysis as mda
 import os
 from mouse2.bond_autocorrelations import bond_autocorrelations
 from mouse2.local_alignment import local_alignment
-from mouse2.lamellar_alignment import lamellar_alignment
+from mouse2.lib.lamellar_orientation import lamellar_alignment
+from mouse2.backbone_twist import backbone_twist
 import numpy as np
 import csv
 
@@ -327,6 +328,44 @@ lamellar_alignment_tgt = {
             }
         }
     
+backbone_twist_tgt = {
+    "twisted_dumbbell" : 
+        {
+            "test_file" : "twisted_dumbbell.pdb",
+            "k_list" : [25,],
+            "selection" : "type 2",
+            "data" : {
+                "25": [
+                    -0.899456799030304,
+                    -0.5086084604263306,
+                    -0.3758271634578705,
+                    -0.9083577394485474,
+                    -0.7195853590965271,
+                    -1.2730724811553955,
+                    -0.7488309741020203,
+                    -1.2726473808288574,
+                    -1.2230472564697266,
+                    -0.4401940703392029,
+                    0.4922315776348114,
+                    -1.278120994567871,
+                    -1.6777702569961548,
+                    -0.24002833664417267,
+                    -1.4382553100585938,
+                    -2.311469078063965,
+                    2.766162157058716,
+                    0.49603745341300964,
+                    -2.1207194328308105,
+                    -3.122112989425659,
+                    -2.534367322921753,
+                    3.08029842376709,
+                    -2.7310874462127686,
+                    -2.6355299949645996,
+                    -3.1235690116882324
+                    ],
+                }
+            }
+        }
+    
     
 def dict_max_discrepancy(dict1, dict2):
     discrepancy = 0.
@@ -423,6 +462,22 @@ class TestLamellarAlignment(unittest.TestCase):
     def test_helical_lamellae(self):
         self.check_lamellar_alignment(
                             lamellar_alignment_tgt["helical_lamellae"])
+        
+class TestBackboneTwist(unittest.TestCase):
+    
+    def check_backbone_twist(self, target):
+        test_file = target["test_file"]
+        k_list = target["k_list"]
+        selection = target["selection"]
+        target_data = target["data"]
+        u = mda.Universe(test_file)
+        result = backbone_twist(u, k_list = k_list, selection = selection)
+        data = list(result["data"].values())[0]
+        discrepancy = dict_max_discrepancy(data, target_data)
+        assert discrepancy <= tolerance
+        
+    def test_twisted_dumbbell(self):
+        self.check_backbone_twist(backbone_twist_tgt["twisted_dumbbell"])
 
         
 if __name__ == "__main__":
