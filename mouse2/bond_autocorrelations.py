@@ -109,7 +109,7 @@ def bond_autocorrelations(u: mda.Universe, k_max,
             c_masked = np.ma.masked_array(c, mask = mask)
             c_average = np.ma.average(c_masked)
             ck.append(c_average)
-        data[str(ts)] = ck
+        data[str(ts)] = { "ck" : ck }
     return { "description" : description, "data" : data }
 
 def main():
