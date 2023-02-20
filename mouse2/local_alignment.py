@@ -290,8 +290,8 @@ def main():
     
     result = local_alignment(u, r_min = args.r_min, r_max = args.r_max,
                              mode = mode, n_bins = args.n_bins,
-                             id_pairs = pairs, same_molecule
-                             = args.same_molecule,
+                             id_pairs = pairs, selection = args.selection,
+                             same_molecule = args.same_molecule,
                              )
 
     print(json.dumps(result, indent = 2))
