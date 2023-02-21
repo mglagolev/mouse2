@@ -335,7 +335,7 @@ backbone_twist_tgt = {
             "k_list" : [25,],
             "selection" : "type 2",
             "data" : {
-                "25": [
+                25 : [
                     -0.899456799030304,
                     -0.5086084604263306,
                     -0.3758271634578705,
@@ -375,6 +375,7 @@ def dict_max_discrepancy(dict1, dict2):
         discrepancy = max(discrepancy, np.max(np.abs(values1 - values2)))
     return discrepancy
 
+
 class TestAutocorrelations(unittest.TestCase):
     
     def check_autocorrelations(self, target):
@@ -403,7 +404,8 @@ class TestAutocorrelations(unittest.TestCase):
     def test_disordered_helices_different_mol(self):
         self.check_autocorrelations(
                        bond_autocorr_tgt["disordered_helices_different_mol"])
-        
+
+     
 class TestLocalAlignment(unittest.TestCase):
     
     def check_local_alignment(self, target):
@@ -446,6 +448,7 @@ class TestLocalAlignment(unittest.TestCase):
         self.check_local_alignment(
                                 local_alignment_tgt["lamellae_flexible_lists"])
         
+
 class TestLamellarAlignment(unittest.TestCase):
     
     def check_lamellar_alignment(self, target):
@@ -462,7 +465,8 @@ class TestLamellarAlignment(unittest.TestCase):
     def test_helical_lamellae(self):
         self.check_lamellar_alignment(
                             lamellar_alignment_tgt["helical_lamellae"])
-        
+
+
 class TestBackboneTwist(unittest.TestCase):
     
     def check_backbone_twist(self, target):
