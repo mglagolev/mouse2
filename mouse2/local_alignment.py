@@ -22,7 +22,7 @@ def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):
     bin_edges = np.asarray(list(result["data"].values())[0][bin_edges_key])
     bincenters = (bin_edges[1:] + bin_edges[:-1]) / 2.
     n_bins = len(bincenters)
-    frequencies = np.ndarray((n_bins))
+    frequencies = np.zeros((n_bins))
     for ts in result["data"]:
         frequencies += np.asarray(
                     result["data"][ts][frequencies_key])
@@ -82,6 +82,9 @@ def local_alignment(
         }
 
     """
+    if r_max == 0.:
+        r_max = min(u.dimensions) / 2.
+    
     # Prepare the description of the output:
     description = "Local orientational ordering parameter s"
     if mode == "histogram":
@@ -135,9 +138,6 @@ def local_alignment(
             # Calculate the values of angle corresponding to bin edges:
             bin_edges_theta = np.arccos(bin_edges)
         
-        if r_max == 0.:
-            r_max = min(u.dimensions) / 2.
-    
         # Calculate vector components
         # 1D arrays, one for each of the coordinates, provide more efficient
         # numpy calculations. Converting the data here, outside of the main
@@ -317,7 +317,8 @@ def main():
         plt.legend(shadow = False, fontsize = 18)
         if args.plot != '-':
             plt.savefig(args.plot)
-        plt.show()
+        else:
+            plt.show()
         
 if __name__ == "__main__":
     main()
