@@ -31,14 +31,14 @@ def main():
         'output', metavar = 'PDB', action = "store", help = "output file")
 
     parser.add_argument(
-        "--hide-pbc-bonds", action = "store_true",
-        help = "Hide the bonds transversing the periodic boundary conditions")
+        "--show-pbc-bonds", action = "store_true",
+        help = "Show the bonds transversing the periodic boundary conditions")
 
     args = parser.parse_args()
 
     u = mda.Universe(args.input, format = 'DATA')
 
-    if args.hide_pbc_bonds:
+    if not args.show_pbc_bonds:
         minbox = min(u.dimensions) / 2.
         bonds_to_delete = [
             bond for bond in u.bonds if bond.length(pbc = False) > minbox]
