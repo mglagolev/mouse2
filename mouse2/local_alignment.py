@@ -261,8 +261,10 @@ def main():
         '--n_bins', metavar = 'N_bins', type = int, nargs = '?',
         default = 150, help = "Number of bins of the distribution histogram")
     
-    parser.add_argument('--plot', action = "store_true",
-                        help = "Plot the distribution histogram")
+    parser.add_argument('--plot', metavar = 'IMAGE_FILE', nargs = '?',
+                        default = False, const = '-',
+                        help = "Plot the distribution histogram. The image "
+                        + "can be stored as a file, if a name is provided")
     
     parser.add_argument('--pairs-file', type = str, nargs = '?',
                         default = "",
@@ -298,7 +300,7 @@ def main():
     
     # Plot the histogram, if requested, with
     # the values summed across the timesteps
-    if args.plot:
+    if args.plot and mode == "histogram":
         import matplotlib.pyplot as plt
         frequencies, bincenters = averaged_frequencies_bin_centers(
           result, "cos_sq_area_normalized_histogram", "bin_edges_cos_sq_theta")
@@ -313,6 +315,8 @@ def main():
         plt.xlabel('cos_sq_\u03B8', fontsize = 18)
         plt.ylabel('P(\u03B8), a.u.', fontsize = 18)
         plt.legend(shadow = False, fontsize = 18)
+        if args.plot != '-':
+            plt.savefig(args.plot)
         plt.show()
         
 if __name__ == "__main__":
