@@ -302,9 +302,6 @@ def main():
     # the values summed across the timesteps
     if args.plot and mode == "histogram":
         import matplotlib.pyplot as plt
-        frequencies, bincenters = averaged_frequencies_bin_centers(
-          result, "cos_sq_area_normalized_histogram", "bin_edges_cos_sq_theta")
-        plt.plot(bincenters, frequencies, label = "Histogram area normalized")
         frequencies, bincenters = averaged_frequencies_bin_centers(result,
            "cos_sq_solid_angle_normalized_histogram", "bin_edges_cos_sq_theta")
         plt.plot(bincenters, frequencies, label = "Solid angle normalized")
