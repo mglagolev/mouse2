@@ -11,7 +11,8 @@ import numpy as np
 import networkx as nx
 from mouse2.lib.neighbor import calculate_neighborlists_from_distances
 
-def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None):
+def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None,
+                         ts_indices = None):
     """
     This function returns a data structure containing list of aggregates
     for all of the timesteps in the MDAnalysis universe.
@@ -57,7 +58,10 @@ def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None):
         
     data = {}
         
-    for ts in u.trajectory:
+    if ts_indices is None:
+        ts_indices = range(len(u.trajectory))
+    for i in ts_indices:
+        ts = u.trajectory[i]
         # Each aggregate will be presented as a list of lists:
         # [[aggregate1_atom1, aggregate1_atom2, aggregate1_atom3, ...],
         #  [aggregate2_atom1, aggregate2_atom2, ...], [aggregate3_atom1, ...]]
