@@ -9,6 +9,7 @@
 
 import argparse
 import MDAnalysis as mda
+from mouse2.lib.utilities import names_from_types
 
 def main():
     """
@@ -43,14 +44,8 @@ def main():
         bonds_to_delete = [
             bond for bond in u.bonds if bond.length(pbc = False) > minbox]
         u.delete_bonds(bonds_to_delete)
-
-    u.add_TopologyAttr('name', ['']*u.atoms.n_atoms)
-
-    atomtypes = list(set([atom.type for atom in u.atoms]))
-
-    for atomtype in atomtypes:
-        selection = u.select_atoms("type " + str(atomtype))
-        selection.atoms.names = [str(atomtype)] * selection.atoms.n_atoms
+        
+    names_from_types(u)
 
     u.atoms.write(args.output)
 
