@@ -266,11 +266,16 @@ def main():
                         help = "Plot the distribution histogram. The image "
                         + "can be stored as a file, if a name is provided")
     
+    parser.add_argument('--saplot', metavar = 'IMAGE_FILE', nargs = '?',
+                        default = False, const = '-',
+                        help = "Plot the distribution histogram, normalized "
+                        + "by the solid angle value. The image "
+                        + "can be stored as a file, if a name is provided")
+
     parser.add_argument('--pairs-file', type = str, nargs = '?',
                         default = "",
                         help = "CSV file with pairs of indices,"
                         + " corresponding to vector ends")
-    
 
     args = parser.parse_args()
 
@@ -297,15 +302,14 @@ def main():
                              )
 
     print(json.dumps(result, indent = 2))
-    
+
     # Plot the histogram, if requested, with
     # the values summed across the timesteps
     if args.plot and mode == "histogram":
         import matplotlib.pyplot as plt
         frequencies, bincenters = averaged_frequencies_bin_centers(result,
-           "cos_sq_solid_angle_normalized_histogram", "bin_edges_cos_sq_theta")
-        plt.plot(bincenters, frequencies, label = "Solid angle normalized")
-        
+           "cos_sq_area_normalized_histogram", "bin_edges_cos_sq_theta")
+        plt.plot(bincenters, frequencies)
         plt.xlim(0, 1)
         plt.ylim(0)
         plt.yticks([0], fontsize = 18)
@@ -316,6 +320,24 @@ def main():
             plt.savefig(args.plot)
         else:
             plt.show()
-        
+
+    # Plot the histogram, if requested, with
+    # the values summed across the timesteps
+    if args.saplot and mode == "histogram":
+        import matplotlib.pyplot as plt
+        frequencies, bincenters = averaged_frequencies_bin_centers(result,
+           "cos_sq_solid_angle_normalized_histogram", "bin_edges_cos_sq_theta")
+        plt.plot(bincenters, frequencies, label = "Solid angle normalized")
+        plt.xlim(0, 1)
+        plt.ylim(0)
+        plt.yticks([0], fontsize = 18)
+        plt.xlabel('cos_sq_\u03B8', fontsize = 18)
+        plt.ylabel('P(\u03B8), a.u.', fontsize = 18)
+        plt.legend(shadow = False, fontsize = 18)
+        if args.plot != '-':
+            plt.savefig(args.plot)
+        else:
+            plt.show()
+
 if __name__ == "__main__":
     main()
