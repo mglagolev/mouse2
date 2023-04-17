@@ -15,6 +15,7 @@ from mouse2.lib.lamellar_orientation import lamellar_alignment
 from mouse2.backbone_twist import backbone_twist
 import numpy as np
 import csv
+import time
 
 test_dir = absolute_path = os.path.dirname(__file__)
 
@@ -375,8 +376,16 @@ def dict_max_discrepancy(dict1, dict2):
         discrepancy = max(discrepancy, np.max(np.abs(values1 - values2)))
     return discrepancy
 
+class TestWithTime(unittest.TestCase):
+    
+    def setUp(self):
+        self.startTime = time.time()
+        
+    def tearDown(self):
+        t = time.time() - self.startTime
+        print('%s: %.3f' % (self.id(), t))
 
-class TestAutocorrelations(unittest.TestCase):
+class TestAutocorrelations(TestWithTime):
     
     def check_autocorrelations(self, target):
         test_file = target["test_file"]
@@ -406,7 +415,7 @@ class TestAutocorrelations(unittest.TestCase):
                        bond_autocorr_tgt["disordered_helices_different_mol"])
 
      
-class TestLocalAlignment(unittest.TestCase):
+class TestLocalAlignment(TestWithTime):
     
     def check_local_alignment(self, target):
         test_file = target["test_file"]
@@ -449,7 +458,7 @@ class TestLocalAlignment(unittest.TestCase):
                                 local_alignment_tgt["lamellae_flexible_lists"])
         
 
-class TestLamellarAlignment(unittest.TestCase):
+class TestLamellarAlignment(TestWithTime):
     
     def check_lamellar_alignment(self, target):
         test_file = target["test_file"]
@@ -467,7 +476,7 @@ class TestLamellarAlignment(unittest.TestCase):
                             lamellar_alignment_tgt["helical_lamellae"])
 
 
-class TestBackboneTwist(unittest.TestCase):
+class TestBackboneTwist(TestWithTime):
     
     def check_backbone_twist(self, target):
         test_file = target["test_file"]
