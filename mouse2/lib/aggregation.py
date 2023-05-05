@@ -9,7 +9,7 @@ Created on Thu Oct 20 20:15:18 2022
 import MDAnalysis as mda
 import numpy as np
 import networkx as nx
-from mouse2.lib.neighbor import calculate_neighborlists_from_distances
+from . neighbor import calculate_neighborlists_from_distances
 
 def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None,
                          ts_indices = None):

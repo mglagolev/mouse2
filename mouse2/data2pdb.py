@@ -9,7 +9,7 @@
 
 import argparse
 import MDAnalysis as mda
-from mouse2.lib.utilities import names_from_types
+from lib.utilities import names_from_types
 
 def main():
     """

@@ -10,7 +10,7 @@ Created on Thu Oct 20 23:34:30 2022
 
 import MDAnalysis as mda
 import json
-from mouse2.lib.aggregation import determine_aggregates
+from lib.aggregation import determine_aggregates
 
 
 def main():

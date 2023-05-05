@@ -9,7 +9,7 @@ Created on Fri Oct 14 17:20:41 2022
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import numpy as np
-from mouse2.lib.vector_orientational_ordering \
+from lib.vector_orientational_ordering \
     import calculate_cos_sq_for_reference
 import json
 
