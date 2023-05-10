@@ -31,9 +31,6 @@ from scipy.spatial.transform import Rotation
 
 RANDOM_SEED = 42
 # System parameters
-CELL = [100, 100, 100, 90, 90, 90]
-NMOL = 4000
-NPOLY = 20
 LBOND = 1.
 # Helical structure parameters
 RTUBE = 0.53
@@ -56,21 +53,45 @@ def main():
         " random")
 
     parser.add_argument(
+        '--npoly', metavar = 'N', nargs = 1, type = int,
+        help = "degree of polymerization")
+
+    parser.add_argument(
+        '--nmol', metavar = 'n', nargs = 1, type = int,
+        help = "number of macromolecules")
+
+    parser.add_argument(
+        '--box', metavar = 'SIZE', nargs = 1, type = float,
+        help = "rectangular simulation cell size")
+
+    parser.add_argument(
         'output', metavar = 'FILE', action = "store",
         help = "output file, the format is determined by MDAnalysis based" +
         " on the file extension")
     
+    parser.add_argument(
+        '--angles', action = "store_true", help = "Add bond angles")
+
+    parser.add_argument(
+        '--dihedrals', action = "store_true", help = "Add dihedral angles")
+
     args = parser.parse_args()
-    
+
     system_type = args.type[0]
+
+    CELL = args.box * 3 + [90, 90, 90]
+    NMOL = args.nmol[0]
+    NPOLY = args.npoly[0]
 
     random.seed(RANDOM_SEED)
 
-    u = mda.Universe.empty(NMOL * NPOLY, trajectory = True)
+    u = mda.Universe.empty(NMOL * NPOLY, trajectory = True,
+                           atom_resindex = [0,] * NMOL * NPOLY)
 
     u.add_TopologyAttr('type')
     u.add_TopologyAttr('mass') #, values = [1.,] * NMOL * NPOLY)
-    u.add_TopologyAttr('resid')
+    u.add_TopologyAttr('resids')
+    u.add_TopologyAttr('resnums')
     u.add_TopologyAttr('angles', values = [])
     u.add_TopologyAttr('dihedrals', values = [])
     u.add_TopologyAttr('impropers', values = [])
@@ -81,6 +102,12 @@ def main():
     ix = 0
     bonds = []
     bond_types = []
+    if args.angles:
+        angles = []
+        angle_types = []
+    if args.dihedrals:
+        dihedrals = []
+        dihedral_types = []
     resids = []
     all_molecules = mda.AtomGroup([],u)
 
@@ -91,7 +118,7 @@ def main():
 
     for imol in range(NMOL):
         #Generate molecule:
-        current_residue = u.add_Residue(resid = imol + 1)
+        current_residue = u.add_Residue(resid = imol + 1, resnum = imol + 1)
         molecule_atoms = []
         molecule_atomtypes = []
         molecule_atom_masses = []
@@ -105,6 +132,12 @@ def main():
             if iatom > 0:
                 bonds.append([ix - 1, ix])
                 bond_types.append('1')
+            if args.angles and iatom > 1:
+                angles.append([ix - 2, ix - 1, ix])
+                angle_types.append('1')
+            if args.dihedrals and iatom > 2:
+                dihedrals.append([ix - 3, ix - 2, ix - 1, ix])
+                dihedral_types.append('1')
             molecule_atomtypes.append('1')
             molecule_atom_masses.append(1.)
             ix += 1
@@ -141,8 +174,11 @@ def main():
         molecule_group.atoms.masses = molecule_atom_masses
         all_molecules += molecule_group
     u.add_bonds(bonds, types = bond_types)
+    if args.angles:
+        u.add_angles(angles, types = angle_types)
+    if args.dihedrals:
+        u.add_dihedrals(dihedrals, types = dihedral_types)
     all_molecules.write(args.output)
     
 if __name__ == "__main__":
     main()
-    
