@@ -12,7 +12,7 @@ import networkx as nx
 from . neighbor import calculate_neighborlists_from_distances
 
 def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None,
-                         ts_indices = None):
+                         ts_indices = None, bonded_as_neighbors = False):
     """
     This function returns a data structure containing list of aggregates
     for all of the timesteps in the MDAnalysis universe.
@@ -83,6 +83,13 @@ def determine_aggregates(u: mda.Universe, r_neigh: float, selection = None,
                                                             r_max = r_neigh)
         #Option 2: use MDAnalysis function to calculate neighbor lists:
     
+        #Add bonded atoms to neighborlists, if necessary:
+        if bonded_as_neighbors:
+            for ix in neighborlists:
+                bonded_indices = [a.index for a in u.atoms[ix].bonded_atoms]
+                neighborlists[ix].append(bonded_indices)
+                neighborlists[ix] = list(set(neighborlists[ix]))
+
         # Initialize a NetworkX graph
         graph = nx.Graph()
         # For every atom add the neighbors to the graph
