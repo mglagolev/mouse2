@@ -18,7 +18,10 @@
 import MDAnalysis as mda
 import argparse
 import json
-from lib.lamellar_orientation import lamellar_alignment
+if __package__ == None:
+    from lib.lamellar_orientation import lamellar_alignment
+else:
+    from .lib.lamellar_orientation import lamellar_alignment
 
 
 def main():
@@ -64,13 +67,10 @@ def main():
 
     u = mda.Universe(*args.input)
     
-    result = lamellar_orientational_ordering_parameters(u, 
-                                             args.block_types[0],
-                                             args.block_types[1],
-                                             store_A_values = args.A,
-                                             store_B_values = args.B,
-                                             store_block_values = args.verbose
-                                             )
+    result = lamellar_alignment(u, args.block_types[0], args.block_types[1],
+                                store_A_values = args.A,
+                                store_B_values = args.B,
+                                store_block_values = args.verbose)
     print(json.dumps(result, indent = 2))
     
 if __name__ == "__main__":

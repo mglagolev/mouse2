@@ -19,7 +19,7 @@
 import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
-from . utilities import normalize_vectors
+from .utilities import normalize_vectors
 
 
 def normal_vector(dir_vectors):

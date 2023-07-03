@@ -9,7 +9,10 @@
 
 import argparse
 import MDAnalysis as mda
-from lib.utilities import names_from_types
+if __package__ == None:
+    from lib.utilities import names_from_types
+else:
+    from .lib.utilities import names_from_types
 
 def main():
     """

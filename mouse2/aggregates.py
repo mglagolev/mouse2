@@ -10,7 +10,10 @@ Created on Thu Oct 20 23:34:30 2022
 
 import MDAnalysis as mda
 import json
-from lib.aggregation import determine_aggregates
+if __package__ == None:
+    from lib.aggregation import determine_aggregates
+else:
+    from .lib.aggregation import determine_aggregates
 
 
 def main():

@@ -11,14 +11,14 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='mouse2',
-    version='0.2.4',    
+    version='0.2.18',
     description="""A toolkit for processing molecular dynamics simulation data
     with a focus on chiral ordering""",
     url='https://github.com/mglagolev/mouse2',
     author='Mikhail Glagolev, Anna Glagoleva',
     author_email='mikhail.glagolev@gmail.com',
     license='GNU GPL v3',
-    packages=['mouse2', 'mouse2.lib', 'mouse2_tests'],
+    packages=['mouse2', 'mouse2_tests', 'mouse2.lib'],
     install_requires=['numpy',
                       'MDAnalysis',
                       'networkx',

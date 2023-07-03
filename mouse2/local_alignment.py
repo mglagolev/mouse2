@@ -9,8 +9,12 @@ Created on Fri Oct 14 17:20:41 2022
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import numpy as np
-from lib.vector_orientational_ordering \
-    import calculate_cos_sq_for_reference
+if __package__ == None:
+    from lib.vector_orientational_ordering \
+        import calculate_cos_sq_for_reference
+else:
+    from .lib.vector_orientational_ordering \
+        import calculate_cos_sq_for_reference
 import json
 
 def averaged_frequencies_bin_centers(result, frequencies_key, bin_edges_key):

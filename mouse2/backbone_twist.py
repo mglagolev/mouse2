@@ -10,7 +10,10 @@ import numpy as np
 import MDAnalysis as mda
 from MDAnalysis import transformations
 import json
-from lib.utilities import normalize_vectors
+if __package__ == None:
+    from lib.utilities import normalize_vectors
+else:
+    from .lib.utilities import normalize_vectors
 
 def backbone_twist(u: mda.Universe, k_list: list,
                    selection = None,
