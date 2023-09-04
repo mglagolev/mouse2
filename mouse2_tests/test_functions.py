@@ -9,6 +9,9 @@ Created on Tue Feb 14 19:50:56 2023
 import unittest
 import MDAnalysis as mda
 import os
+import sys
+parent_dir_name = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(parent_dir_name + '/..')
 from mouse2.bond_autocorrelations import bond_autocorrelations
 from mouse2.local_alignment import local_alignment
 from mouse2.lib.lamellar_orientation import lamellar_alignment
