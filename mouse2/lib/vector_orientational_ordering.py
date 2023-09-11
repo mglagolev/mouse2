@@ -8,8 +8,25 @@ Created on Tue Oct 18 14:46:18 2022
 
 import numpy as np
 from .neighbor import neighbor_mask
+from numba import jit, vectorize, float32, float64
 
-    
+@vectorize([float32(float32, float32, float32, float32, float32, float32),
+            float64(float64, float64, float64, float64, float64, float64)])
+def cos_sq_normed(ref_x, ref_y, ref_z, vec_x, vec_y, vec_z):
+    return  ((ref_x * vec_x
+           + ref_y * vec_y
+           + ref_z * vec_z)**2
+          / ( ref_x**2 + ref_y**2 + ref_z**2 )
+          / (vec_x**2 + vec_y**2 + vec_z**2 ))
+
+@jit(parallel=True, nopython=True)
+def cos_sq_normed_2(ref_x, ref_y, ref_z, vec_x, vec_y, vec_z):
+    return   ((ref_x * vec_x
+           + ref_y * vec_y
+           + ref_z * vec_z )**2
+          / (ref_x**2 + ref_y**2 + ref_z**2)
+          / (vec_x**2 + vec_y**2 + vec_z**2))
+
 def calculate_cos_sq_for_reference(
         vector_components: [np.ndarray, np.ndarray, np.ndarray],
         vector_midpoints: [np.ndarray, np.ndarray, np.ndarray],
@@ -85,13 +102,13 @@ def calculate_cos_sq_for_reference(
     
     # Calculate the nparray for normalized cos^2(theta), where theta are the
     # angles between the bonds and the reference vector
-    cos_sq_normed = (
-            (ref_components[0] * vector_components[0]
-           + ref_components[1] * vector_components[1]
-           + ref_components[2] * vector_components[2] )**2
-          / np.linalg.norm(ref_components)**2
-          / np.linalg.norm(vector_components, axis = 0)**2)
+    cos_sq_normed_values = cos_sq_normed_2(ref_components[0],
+                                  ref_components[1],
+                                  ref_components[2],
+                                  vector_components[0],
+                                  vector_components[1],
+                                  vector_components[2])
     
     # Mask the invalid values, compress and return
-    masked_cos_sq = np.ma.array(cos_sq_normed, mask = masked_data)
+    masked_cos_sq = np.ma.array(cos_sq_normed_values, mask = masked_data)
     return np.ma.compressed(masked_cos_sq)

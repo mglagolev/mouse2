@@ -7,7 +7,10 @@ Created on Sat Nov 19 13:36:56 2022
 """
 
 import numpy as np
+from numba import jit
+import MDAnalysis as mda
 
+@jit(nopython=True, parallel=True)
 def calculate_squared_distances(coordinates, reference_coordinates, box):
     """
     This function employs numpy to calculate an array of squared distances
@@ -47,11 +50,17 @@ def calculate_squared_distances(coordinates, reference_coordinates, box):
 
     #Find the bond image which is closest to the reference vector
     if box[0] > 0.:
-        drx = drx - box[0] * np.around(drx / box[0])
+        xround = np.empty_like(drx)
+        np.round_(drx / box[0], 0, xround)
+        drx = drx - box[0] * xround
     if box[1] > 0.:
-        dry = dry - box[1] * np.around(dry / box[1])
+        yround = np.empty_like(dry)
+        np.round_(dry / box[1], 0, yround)
+        dry = dry - box[1] * yround
     if box[2] > 0.:
-        drz = drz - box[2] * np.around(drz / box[2])
+        zround = np.empty_like(drz)
+        np.round_(drz / box[0], 0, zround)
+        drz = drz - box[2] * zround
         
     #Calculate the distance between the atoms
     rsq = drx**2 + dry**2 + drz**2
@@ -148,7 +157,6 @@ def neighbor_mask(coordinates: [np.ndarray, np.ndarray, np.ndarray],
     # values "MDA-serial" or "MDA-OpenMP" and use MDAnalysis with the
     # corresponding backend
     if backend[:3] == "MDA":
-        import MDAnalysis as mda
         stacked_coordinates = np.column_stack((
             coordinates[0], coordinates[1], coordinates[2]))
         r = mda.lib.distances.distance_array(
