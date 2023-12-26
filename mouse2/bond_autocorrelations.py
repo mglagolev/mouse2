@@ -169,7 +169,7 @@ def main():
         #Average the data across the timesteps
         summed_data = np.ndarray((args.k_max + 1,))
         for ts in result["data"]:
-            summed_data += np.asarray(result["data"][ts])
+            summed_data += np.asarray(result["data"][ts]["ck"])
         averaged_data = summed_data / len(result["data"])
         
     if args.fit:
