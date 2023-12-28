@@ -14,7 +14,7 @@ manually:
     - networkx
     - matplotlib
     - scipy
-And the script_command parameter shall be adjusted.
+and the script_command parameter needs to be be adjusted.
 The script is run without any arguments, the correlation length can varied
 by altering the k_max parameter in the script.
 """
