@@ -31,6 +31,8 @@ import MDAnalysis as mda
 import numpy as np
 import tempfile
 import os
+parent_dir_name = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(parent_dir_name + '/../..')
 from mouse2.local_alignment import local_alignment
 from matplotlib import pyplot as plt
 
@@ -65,7 +67,6 @@ atom_ids = [[i[0]-2, i[1]-2] for i in atom_nums]
 
 r_maxes = np.arange(7, 21, dtype = int)
 r_mins = np.arange(5, 19, dtype = int)
-#r_mins = np.repeat(1e-6, len(r_maxes))
 
 histo_radii = [8, 14]
 
