@@ -103,7 +103,10 @@ def local_alignment(
     # real. The closest images of the bonds will be found in the nested
     # function.
     unwrap = transformations.unwrap(u.atoms)
-    u.trajectory.add_transformations(unwrap)
+    try:
+        u.trajectory.add_transformations(unwrap)
+    except ValueError:
+        pass
     
     # Select atoms by type or read selection criteria in MDAnalysis synthax
     if selection is not None:
