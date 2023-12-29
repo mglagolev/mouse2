@@ -1,10 +1,10 @@
 """
-mouse2_tests
+mouse2.tests
 
 A toolkit for processing molecular dynamics simulation data
 with a focus on chiral ordering.
 """
 
-__version__ = "0.2.18"
+__version__ = "0.2.22"
 __author__ = 'Mikhail Glagolev, Anna Glagoleva'
 __credits__ = 'A. N. Nesmeyanov Institute of Organoelement Compounds RAS'
