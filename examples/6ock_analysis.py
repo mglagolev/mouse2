@@ -135,8 +135,8 @@ for i, r in enumerate(histo_radii):
                 label = f"r = {r}")
 
 plt.legend(fontsize = 20)
-plt.xlabel('cos²(χ)', fontsize = 20)
-plt.yticks()
+plt.xlabel('cos²(χ)', fontsize = 14)
+plt.tick_params(left = False, labelleft = False) 
 plt.show()
     
 
