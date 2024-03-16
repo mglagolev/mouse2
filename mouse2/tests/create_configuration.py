@@ -29,13 +29,41 @@ import math
 import argparse
 from scipy.spatial.transform import Rotation
 
+
 RANDOM_SEED = 42
 # System parameters
 LBOND = 1.
+RBEAD = 1.122 * LBOND / 2.
 # Helical structure parameters
 RTUBE = 0.53
 PITCH = 1.66
 PER_TURN = 3.3
+
+def overlap4d(probe4d, coords4d, r = LBOND / 2.):
+    """
+    Check if the sphere of radius r placed at the probe coordinates
+    overlaps with one of the spheres of radius r placed at coords coordinates.
+
+    """
+    dr = np.linalg.norm(coords4d - probe4d, axis = 1)
+    overlap = np.sum(np.less_equal(dr, 2. * r))
+    #pdb.set_trace()
+    if overlap > 0:
+        return True
+    else:
+        return False
+
+def read_atomtypes(atomtypes_filename):
+    """
+    Read the atom types sequences.
+    One sequence per string
+    """
+    all_atomtypes = []
+    atomtypes_file = open(atomtypes_filename, 'r')
+    for line in atomtypes_file.readlines():
+        all_atomtypes.append(line.split())
+    return all_atomtypes
+
 
 def main():
     """
@@ -53,11 +81,11 @@ def main():
         " random")
 
     parser.add_argument(
-        '--npoly', metavar = 'N', nargs = 1, type = int,
+        '--npoly', metavar = 'N', nargs = '?', type = int, const = None,
         help = "degree of polymerization")
 
     parser.add_argument(
-        '--nmol', metavar = 'n', nargs = 1, type = int,
+        '--nmol', metavar = 'n', nargs = '?', type = int, const = None,
         help = "number of macromolecules")
 
     parser.add_argument(
@@ -75,18 +103,37 @@ def main():
     parser.add_argument(
         '--dihedrals', action = "store_true", help = "Add dihedral angles")
 
+    parser.add_argument(
+        '--self-avoid', action = "store_true",
+        help = "Avoid overlapping of the spheres with diameter=bond length")
+
+    parser.add_argument(
+        '--atomtypes', metavar = 'ATOM_TYPES_SEQUENCE', nargs = '?', 
+        type = str, default = None, help = "file with atomtypes sequences")
+
     args = parser.parse_args()
+
+    if (((args.nmol is not None) or (args.npoly is not None))
+        and args.atomtypes is not None):
+        raise NameError("Atomtype sequences can not be used together with\
+                        nmol or npoly")
 
     system_type = args.type[0]
 
     CELL = args.box * 3 + [90, 90, 90]
-    NMOL = args.nmol[0]
-    NPOLY = args.npoly[0]
+    if args.atomtypes is None:
+        nmol = args.nmol[0]
+        npolys = [args.npoly[0]] * nmol
+    else:
+        all_atomtypes = read_atomtypes(args.atomtypes)
+        nmol = len(all_atomtypes)
+        npolys = [len(seq) for seq in all_atomtypes]
+    ntotal = sum(npolys)
 
     random.seed(RANDOM_SEED)
 
-    u = mda.Universe.empty(NMOL * NPOLY, trajectory = True,
-                           atom_resindex = [0,] * NMOL * NPOLY)
+    u = mda.Universe.empty(ntotal, trajectory = True,
+                           atom_resindex = [0,] * ntotal)
 
     u.add_TopologyAttr('type')
     u.add_TopologyAttr('mass') #, values = [1.,] * NMOL * NPOLY)
@@ -108,7 +155,10 @@ def main():
     if args.dihedrals:
         dihedrals = []
         dihedral_types = []
-    resids = []
+
+    if args.self_avoid:
+        raw_coords = np.full((ntotal, 4), [2 * RBEAD, 0., 0., 0.])
+
     all_molecules = mda.AtomGroup([],u)
 
     # If the system is not "disordered", all of the molecules will have
@@ -116,40 +166,48 @@ def main():
     if system_type[:10] != "disordered":
         molecule_rotation = Rotation.random()
 
-    for imol in range(NMOL):
+
+    for imol in range(nmol):
+        npoly = npolys[imol]
         #Generate molecule:
         current_residue = u.add_Residue(resid = imol + 1, resnum = imol + 1)
         molecule_atoms = []
-        molecule_atomtypes = []
+        if args.atomtypes is not None:
+            molecule_atomtypes = read_atomtypes(args.atomtypes)[imol]
+            if len(molecule_atomtypes) != npoly:
+                raise NameError("Atomtype string length != N")
+        else:
+            molecule_atomtypes = ['1'] * npoly
         molecule_atom_masses = []
         x, y, z = 0., 0., 0.
-        for iatom in range(NPOLY):
-            #Creating an atom with the current coordinates:
-            atom = mda.core.groups.Atom(u = u, ix = ix)
-            atom.position = np.array([x, y, z])
-            atom.residue = current_residue
-            molecule_atoms.append(atom)
-            if iatom > 0:
-                bonds.append([ix - 1, ix])
-                bond_types.append('1')
-            if args.angles and iatom > 1:
-                angles.append([ix - 2, ix - 1, ix])
-                angle_types.append('1')
-            if args.dihedrals and iatom > 2:
-                dihedrals.append([ix - 3, ix - 2, ix - 1, ix])
-                dihedral_types.append('1')
-            molecule_atomtypes.append('1')
-            molecule_atom_masses.append(1.)
-            ix += 1
+        for iatom in range(npoly):
             #Calculating coordinates for the next atom:
             #Random walk
             if system_type[:6] == "random":
                 bond_vector = [0., 0., LBOND]
-                rotation = Rotation.random()
-                rotated_bond = Rotation.apply(rotation, bond_vector)
-                x += rotated_bond[0]
-                y += rotated_bond[1]
-                z += rotated_bond[2]
+                while True:
+                    rotation = Rotation.random()
+                    rotated_bond = Rotation.apply(rotation, bond_vector)
+                    xnew = x + rotated_bond[0]
+                    ynew = y + rotated_bond[1]
+                    znew = z + rotated_bond[2]
+                    # Check overlapping and return doesnt_overlap
+                    if args.self_avoid:
+                        if iatom == 0:
+                            overlaps = overlap4d([0., xnew, ynew, znew],
+                                                 raw_coords, r = RBEAD)
+                        else:
+                            overlaps = overlap4d([0., xnew, ynew, znew],
+                                                 np.delete(raw_coords, ix-1,
+                                                 axis = 0),
+                                                 r = RBEAD)
+                        if not overlaps:
+                            break
+                    else:
+                            break
+                x = xnew
+                y = ynew
+                z = znew
             #Rod
             if system_type[-4:] == "rods":
                 bond_vector = [0., 0., LBOND]
@@ -161,6 +219,25 @@ def main():
                 x = RTUBE * math.cos((iatom + 1) * 2. * math.pi / PER_TURN)
                 y = RTUBE * math.sin((iatom + 1) * 2. * math.pi / PER_TURN)
                 z = PITCH * (iatom + 1) / PER_TURN
+            #Creating an atom with the current coordinates:
+            atom = mda.core.groups.Atom(u = u, ix = ix)
+            atom.position = np.array([x, y, z])
+            atom.residue = current_residue
+            molecule_atoms.append(atom)
+            if args.self_avoid:
+                raw_coords[ix] = [0., x, y, z]
+            if iatom > 0:
+                bonds.append([ix - 1, ix])
+                bond_types.append('1')
+            if args.angles and iatom > 1:
+                angles.append([ix - 2, ix - 1, ix])
+                angle_types.append('1')
+            if args.dihedrals and iatom > 2:
+                dihedrals.append([ix - 3, ix - 2, ix - 1, ix])
+                dihedral_types.append('1')
+            #molecule_atomtypes.append('1')
+            molecule_atom_masses.append(1.)
+            ix += 1
         molecule_group = mda.AtomGroup(molecule_atoms)
         # Place the first monomer unit randomly in the simulation cell
         translation_vector = np.array(CELL[:3]) * \
@@ -179,6 +256,6 @@ def main():
     if args.dihedrals:
         u.add_dihedrals(dihedrals, types = dihedral_types)
     all_molecules.write(args.output)
-    
+
 if __name__ == "__main__":
     main()
