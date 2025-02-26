@@ -125,6 +125,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
     if add_dihedrals:
         dihedrals = []
         dihedral_types = []
+    molecule_tags = []
 
     if self_avoid:
         raw_coords = np.full((ntotal, 4), [2 * RBEAD, 0., 0., 0.])
@@ -142,6 +143,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
         #Generate molecule:
         current_residue = u.add_Residue(resid = imol + 1, resnum = imol + 1)
         molecule_atoms = []
+        this_molecule_tags = [imol + 1] * npoly
         if atomtypes is not None:
             molecule_atomtypes = read_atomtypes(atomtypes)[imol]
             if len(molecule_atomtypes) != npoly:
@@ -209,6 +211,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
             molecule_atom_masses.append(1.)
             ix += 1
         molecule_group = mda.AtomGroup(molecule_atoms)
+        molecule_tags += this_molecule_tags
         # Place the first monomer unit randomly in the simulation cell
         while True:
             translation_vector = np.array(cell[:3]) * \
@@ -242,6 +245,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
         u.add_angles(angles, types = angle_types)
     if add_dihedrals:
         u.add_dihedrals(dihedrals, types = dihedral_types)
+    u.trajectory.ts.data['molecule_tag'] = molecule_tags
     all_molecules.write(output)
 
 
