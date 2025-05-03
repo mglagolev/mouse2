@@ -36,7 +36,7 @@ except ModuleNotFoundError:
 RANDOM_SEED = 42
 # System parameters
 LBOND = 1.
-RBEAD = 1.122 * LBOND / 2.
+#RBEAD = 1.25 * LBOND / 2. #1.122 * LBOND / 2.
 # Helical structure parameters
 RTUBE = 0.53
 PITCH = 1.66
@@ -96,7 +96,7 @@ def read_atomtypes(atomtypes_filename):
 
 def create_configuration(system_type = None, npoly = None, nmol = None,
                          box = None, output = None, add_angles = False,
-                         add_dihedrals = False, self_avoid = False,
+                         add_dihedrals = False, self_avoid = None,
                          atomtypes = None):
     
     if ((nmol is not None) or (npoly is not None)) and atomtypes is not None:
@@ -127,7 +127,8 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
         dihedral_types = []
     molecule_tags = []
 
-    if self_avoid:
+    if self_avoid is not None:
+        RBEAD = float(self_avoid) * LBOND / 2.
         raw_coords = np.full((ntotal, 4), [2 * RBEAD, 0., 0., 0.])
 
     all_molecules = mda.AtomGroup([],u)
@@ -164,7 +165,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
                     ynew = y + rotated_bond[1]
                     znew = z + rotated_bond[2]
                     # Check overlapping and return doesnt_overlap
-                    if self_avoid:
+                    if self_avoid is not None:
                         if iatom == 0:
                             overlaps = overlap4d([0., xnew, ynew, znew],
                                                  raw_coords, cell[:3],
@@ -222,7 +223,7 @@ def create_configuration(system_type = None, npoly = None, nmol = None,
                                         molecule_group.atoms.positions)
             new_positions += translation_vector
             has_overlap = False
-            if self_avoid:
+            if self_avoid is not None:
                 for i_atom, atom_pos in enumerate(new_positions):
                     #checked_atom_ix = ix - len(new_positions) + i_atom
                     atom_pos_4d = [0, atom_pos[0], atom_pos[1], atom_pos[2]]
@@ -283,7 +284,7 @@ if __name__ == "__main__":
         '--dihedrals', action = "store_true", help = "Add dihedral angles")
 
     parser.add_argument(
-        '--self-avoid', action = "store_true",
+        '--self-avoid', nargs = "?", const = 1.122, default = None,
         help = "Avoid overlapping of the spheres with diameter=bond length")
 
     parser.add_argument(
